@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Pragma" contect="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="./css/home.css?ver=4">
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./css/umy.css">
+    <title></title>
+</head>
+
+<body>
+    <div id="app" v-loading="adminLoading">
+        <div class="login_head" @click="showUrl">
+            欢迎使用注塑集群微终端
+        </div>
+        <div class="login_content">
+
+            <div class="inner_login_content flex">
+                <div :class="activeTag == 0?'bgBlue':'bgWhite'">
+                    <div class="inner_head" @click="changeTag(0)">
+                        <span>点击使用刷卡登录</span>
+                    </div>
+                    <div class="inner_content">
+                        <div class="icon_img"></div>
+                        <div class="icon_text">请将工牌放置在识别区</div>
+                    </div>
+                </div>
+                <div :class="activeTag == 1?'bgBlue':'bgWhite'">
+                    <div class="inner_head" @click="changeTag(1)">
+                        <span>点击使用账号登录</span>
+                    </div>
+                    <div class="inner_content">
+                        <el-form ref="loginRef" :model="loginForm" :rules="rules">
+                            <el-form-item prop="Account">
+                                <el-input type="text" v-model="loginForm.Account" @keyup.enter.native="login">
+                                    <i slot="prefix" class="icon_img_account"></i>
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item prop="Pwd" class="margin_bottom">
+                                <el-input type="password" v-model="loginForm.Pwd" show-password
+                                    @keyup.enter.native="login">
+                                    <i slot="prefix" class="icon_img_pwd"></i></el-input>
+                            </el-form-item>
+                            <el-form-item :style="{display:clickNumber == 5?'block':'none'}">
+                                <el-input type="text" v-model="loginForm.Url"></el-input>
+                            </el-form-item>
+                            <el-form-item class="alert_text">
+                                <span @click="openDialog">忘记密码？</span>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button :type="activeTag == 0?'primary':'white'" @click="login">登 录</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+<script src="./js/vue.js"></script>
+<script src="./js/index.js"></script>
+<script src="./js/token.js"></script>
+<script src="./js/axios.min.js"></script>
+<script src="./js/DateJson.js"></script>
+<script src="./js/echarts.js"></script>
+<script type="text/javascript">
+    if (document.documentElement.clientWidth <= 1280) {
+        document.documentElement.style.fontSize = '10px';
+    } else {
+        document.documentElement.style.fontSize = document.documentElement.clientWidth / 1920 * 10 + 'px';
+    }
+</script>
+<script>
+    var app = new Vue({
+        el: "#app",
+        components: {
+        },
+        data: {
+            // 192.168.101.228
+            adminLoading: false,
+            activeTag: 1,
+            loginForm: {
+                Account: '',
+                Pwd: '',
+                Url: 'http://192.168.101.228'
+            },
+            rules: {
+                Account: [
+                    { required: true, message: '账号必填', trigger: 'blur' }
+                ],
+                Pwd: [
+                    { required: true, message: '密码必填', trigger: 'blur' }
+                ]
+            },
+            clickNumber: 0
+        },
+        created() {
+
+        },
+        methods: {
+            // 显示地址栏
+            showUrl() {
+                if (this.clickNumber >= 6) {
+                    this.clickNumber = 0
+                } else {
+                    this.clickNumber++
+                }
+            },
+            // 切换状态
+            changeTag(val) {
+                this.activeTag = val;
+            },
+            // 登录
+            login() {
+                this.$refs['loginRef'].validate((valid) => {
+                    if (valid) {
+                        _this.adminLoading = true;
+                        localStorage.setItem('url', _this.loginForm.Url);
+                        let param = new URLSearchParams()
+                        param.append('Account', _this.loginForm.Account)
+                        param.append('Pwd', _this.loginForm.Pwd)
+                        //账号密码验证成功
+                        axios.post(_this.loginForm.Url + "/Login/CheckAccount", param,
+                            {
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                }
+                            })
+                            .then(function (response) {
+                                if (response.data.result == true) {
+                                    _this.adminLoading = false;
+                                    setCookie("token", response.data.token);
+                                    localStorage.setItem('userInfo', JSON.stringify(response.data));
+                                    window.location.href = "index.html";
+                                }
+                                else {
+                                    _this.adminLoading = false;
+                                    _this.$message({
+                                        message: response.data.msg,
+                                        type: 'error'
+                                    });
+                                }
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+
+                            });
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            openDialog() {
+                this.$message({
+                    message: '请联系系统负责人！致电：337188',
+                    type: 'warning',
+                    duration: 8000
+                });
+            }
+
+        },
+        mounted() {
+        }
+    })
+    const _this = app
+</script>

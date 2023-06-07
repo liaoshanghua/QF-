@@ -1,0 +1,3244 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<meta http-equiv="Pragma" contect="no-cache">
+		<meta http-equiv="Cache-Control" content="no-store">
+		<meta http-equiv="Expires" content="0">
+		<link rel="stylesheet" href="./css/home.css?ver=40">
+		<link rel="stylesheet" href="./css/index.css">
+		<link rel="stylesheet" href="./css/umy.css">
+
+		<title></title>
+	</head>
+
+	<body>
+		<div id="app" v-cloak v-loading="adminLoading">
+			<div class="fix_up">注塑集群<br>&nbsp;微终端</div>
+			<div class="left">
+				<el-tabs tab-position="left" class="leftHeight" v-model="activeName" @tab-click="handleClick">
+					<el-tab-pane name="left_0">
+						<div slot="label" class="">
+							<div class="icon icon1"></div><span class="text">订单</span>
+						</div>
+						<div class="head_tab">
+							<el-tabs tab-position="top" class="head" @tab-click="handleClick_1" v-model="activeName_2">
+								<el-tab-pane label="全部订单" name="firstTab_0">
+								</el-tab-pane>
+								<el-tab-pane label="待生产" name="firstTab_12">
+								</el-tab-pane>
+								<el-tab-pane label="预约开始" name="firstTab_13">
+								</el-tab-pane>
+								<el-tab-pane label="生产中" name="firstTab_14">
+								</el-tab-pane>
+								<el-tab-pane label="预约停机" name="firstTab_15">
+								</el-tab-pane>
+								<el-tab-pane label="已完成" name="firstTab_16">
+								</el-tab-pane>
+								<el-tab-pane label="已停机" name="firstTab_17">
+								</el-tab-pane>
+							</el-tabs>
+							<div class="inner_all">
+								<div class="inner_left_2">
+									<div class="inner_left_up flex_between">
+										<search-com ref="searchRef" class="search"
+											:searchdata="formSearchs[item.remarkTb].datas"
+											v-for="(item,i) in first_list" v-show="home_tag_1 == item.remarkTb" :key="i"
+											:searchform="formSearchs[item.remarkTb].forms" :remark="item.remarkTb"
+											:btnForm="btnForm[item.remarkTb]" @btnclick="btnClick">
+										</search-com>
+										<div class="flex">
+											<div class="right_head_title">
+												操作台
+											</div>
+											<!-- <div class="margin_left_1" v-show="!disabled_1[0]">
+                                            <el-select clearable filterable size="medium" placeholder="指定机台"
+                                                style="width:140px" v-model="submitForm[0].OutfitID">
+                                                <el-option v-for="(item,i) in lines" :key="i" :label="item.LineName"
+                                                    :disabled="item.OutfitStatus == 1 || item.OutfitStatus == 2 || item.OutfitStatus == 3"
+                                                    :value="item.OutfitID">
+                                                </el-option>
+                                            </el-select>
+                                        </div> -->
+											<div class="flex margin_left_1">
+												<!-- <el-button size="medium" type="up" @click="upOutfit"
+                                                v-show="!disabled_1[0]">
+                                                上机</el-button> -->
+
+												<el-button size="medium" type="primary" @click="appointmentStart"
+													v-show="home_tag_1 == 12 || home_tag_1 == 17">
+													预约上机</el-button>
+												<el-button size="medium" type="primary" @click="changeAppointment"
+													v-show="home_tag_1 == 13">
+													更改预约</el-button>
+												<el-button size="medium" type="primary" @click="appointmentEnd"
+													v-show="home_tag_1 == 14">
+													预约停机</el-button>
+												<el-button size="medium" type="primary" @click="changeAppointment_2"
+													v-show="home_tag_1 == 15">
+													更改预约</el-button>
+											</div>
+										</div>
+									</div>
+									<div class="inner_left_down" v-show="home_tag_1 == item.remarkTb"
+										v-for="(item,i) in first_list" :key="i">
+										<div class="text_right" v-show="home_tag_1 == 0">
+											<div :class="labelStatus1 == y ? 'statusActive cursor' : 'cursor'"
+												v-for="(x, y) in Status1" :key="y">
+												<span @click="changeStatus(x, y)">{{ x.label }}</span>
+												<span class="vertical"></span>
+											</div>
+										</div>
+
+										<!-- <div class="text_right" v-show="home_tag_1 == 12">
+                                        <div :class="labelStatus2 == y ? 'statusActive cursor' : 'cursor'"
+                                            v-for="(x, y) in Status2" :key="y">
+                                            <span @click="changeStatus2(x, y)">{{ x.label }}</span>
+                                            <span class="vertical"></span>
+                                        </div>
+                                    </div> -->
+
+										<div class="text_right" v-show="home_tag_1 == 14">
+											<div :class="labelStatus3 == y ? 'statusActive cursor' : 'cursor'"
+												v-for="(x, y) in Status3" :key="y">
+												<span @click="changeStatus3(x, y)">{{ x.label }}</span>
+												<span class="vertical"></span>
+											</div>
+										</div>
+										<pltable-com :rowkey="'RowNumber'" :height="item.height"
+											:tabledata="tableData[item.remarkTb]" :rowstyle="rowStyle"
+											:cellstyle="cellStyle" ref="tableRef_1"
+											:tableheader="tableColumns[item.remarkTb]"
+											:tableloading="tableLoading[item.remarkTb]" :remark="item.remarkTb"
+											:sysid="sysID[item.remarkTb].ID" :isclear="isClear[item.remarkTb]"
+											:hasselect="hasselect[i]" :pagination="tablePagination[item.remarkTb]"
+											@handlerowclick="handleRowClick" :showpagination="false"
+											@pagechange="pageChange" @pageSize="pageSize" @changeline="changeline"
+											@startend="startend" @newupoutfit="newupoutfit" @startup="startup"
+											@sortChange="sortChange" @deleteappointment="deleteappointment"
+											@addoutfitnew="addoutfitnew" @lookdetails="lookdetails"
+											@selectfun="selectFun">
+										</pltable-com>
+									</div>
+
+								</div>
+								<!-- <div class="inner_right">
+                                <div class="inner_right_up">
+                                    <div class="right_head_title">
+                                        订单详情
+                                    </div>
+                                    <div class="right_head_content">
+                                        <el-row v-for="(item,i) in rightData_0" :key="i" class="right_row">
+                                            <el-col :span="8" class="border_1 border_left text_center">
+                                                {{item.label}}</el-col>
+                                            <el-col :span="16" class="border_1 el_col_right">
+                                                {{rightForm[0][item.value]}}</el-col>
+                                        </el-row>
+                                    </div>
+                                </div>
+                                <div class="inner_right_down">
+                                    <div class="right_head_title">
+                                        操作台
+                                    </div>
+                                    <div>
+                                        <el-select clearable filterable size="medium" placeholder="指定机台"
+                                            v-model="submitForm[0].OutfitID">
+                                            <el-option v-for="(item,i) in lines" :key="i" :label="item.LineName"
+                                                :disabled="item.OutfitStatus == 1 || item.OutfitStatus == 2"
+                                                :value="item.OutfitID">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                    <div class="flex_column margin_top_1">
+                                        <el-button size="medium" type="up" @click="upOutfit" v-show="!disabled_1[0]">
+                                            上机</el-button>
+                                        <el-button size="medium" type="add" @click="addOutfit" v-show="!disabled_1[1]">
+                                            追加</el-button>
+                                    </div>
+                                </div>
+                            </div> -->
+							</div>
+						</div>
+					</el-tab-pane>
+					<el-tab-pane name="left_1">
+						<div slot="label" class="">
+							<div class="icon icon2"></div><span class="text">车间</span>
+						</div>
+						<div class="head_tab">
+							<el-tabs tab-position="top" class="head" @tab-click="handleClick_2">
+								<el-tab-pane label="设备总览">
+									<div class="inner_all">
+										<div class="inner_left">
+											<!-- <div class="inner_left_up">
+                                            <search-com ref="searchRef" class="search"
+                                                :searchdata="formSearchs[1].datas" :searchform="formSearchs[1].forms"
+                                                :remark="1" :btnForm="btnForm[1]" @btnclick="btnClick">
+                                            </search-com>
+                                        </div> -->
+											<div class="inner_left_down_2">
+												<div class="inner_card">
+													<div @click="handleRowClick(item,1,i)"
+														:class="targetTag_1 == i?'inner_card_box inner_card_box_active':item.ProductionStatus ==0?'inner_card_box inner_card_box_info':item.ProductionStatus ==22?'inner_card_box inner_card_box_success':item.ProductionStatus ==25?'inner_card_box inner_card_box_success':item.ProductionStatus ==28?'inner_card_box inner_card_box_danger':'inner_card_box'"
+														v-for="(item,i) in tableData[1]">
+														<div style="display: flex;justify-content: space-between;"
+															:class="item.ProductionStatus ==0?'card_head infoBg':item.ProductionStatus ==22?'card_head successBg':item.ProductionStatus ==25?'card_head successBg':item.ProductionStatus ==28?'card_head dangerBg':'card_head'">
+															<span>{{item.LineName}}</span>
+															<img src="./img/notice.png" alert="" v-show="item.IsNew" />
+															<span v-show="item.Rate">{{item.Rate}}</span>
+														</div>
+														<!-- primaryBg_2  头部保留原来颜色，不然不确定本来状态是什么-->
+														<div class="card_contnet">
+															<div class="label_info">模具:{{item.MoldName}}</div>
+															<div class="label_info">产品:{{item.MaterialName}}</div>
+															<div class="label_info">计划数量:{{item.DemandQty}}</div>
+															<div class="label_info">生产数量:{{item.VirtualQty}}</div>
+															<div class="label_info">生产时长:{{item.SecondNum}}</div>
+															<div class="label_black" v-html>
+																{{item.MaterialNames}}
+															</div>
+															<!-- <div class="label_black">
+                                                           
+                                                        </div> -->
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="inner_right">
+											<div class="inner_right_up_2 inner_right_height_2">
+												<div class="right_head_title flex_between">
+													<span>操作台</span>
+													<span class="refreshBtn" @click="dataSearch(1)">刷新</span>
+												</div>
+												<div class="flex_column margin_top_1">
+													<el-button size="medium" type="primary" @click="setOrder">开机选单
+													</el-button>
+													<!-- <el-button size="medium" type="parse" @click="changeOrder">更换订单
+                                                </el-button> -->
+
+													<!-- <el-button size="medium" type="primary" @click="appointmentStart">预约开机
+                                                </el-button> -->
+
+													<el-button size="medium" type="up" @click="productionComplete"
+														v-show="rightForm[1].ProductionStatus == 22 || rightForm[1].ProductionStatus == 28">
+														生产完成
+													</el-button>
+
+													<el-button size="medium" type="primary" @click="openDialog_batchno"
+														v-show="rightForm[1].IsNew == 1">
+														切换产品
+													</el-button>
+													<el-button size="medium" type="primary"
+														@click="openDialog_batchno_2"
+														v-show="rightForm[1].IsNew_2 == 1">
+														追加产品
+													</el-button>
+												</div>
+											</div>
+											<div class="empty_White"></div>
+											<div class="inner_right_down_3">
+												<el-button size="medium" type="parse" @click="parseOutfit_1"
+													v-show="rightForm[1].ProductionStatus == 22">停机</el-button>
+												<el-button size="medium" type="parse" @click="moreParseOutfit_1">批量停机
+												</el-button>
+												<div class="right_head_title">
+													停机原因
+												</div>
+												<div class="flex_column">
+													<el-button v-for="(item,i) in reasons" :key="i" size="medium"
+														@click="setAbnormal(item.name)"
+														:style="{fontWeight:'bold',color:(submitForm[1].AbnormalReason == item.name)?'red !important':''}">
+														{{item.name}}
+													</el-button>
+												</div>
+
+												<div class="flex_column margin_top_1">
+													<el-button size="medium" type="down"
+														v-show="rightForm[1].ProductionStatus == 22"
+														@click="AbnormalStartNew">
+														异常开始
+													</el-button>
+												</div>
+											</div>
+											<div class="empty_White"></div>
+										</div>
+									</div>
+								</el-tab-pane>
+							</el-tabs>
+						</div>
+					</el-tab-pane>
+					<el-tab-pane name="left_2">
+						<div slot="label" class="">
+							<div class="icon icon3"></div><span class="text">产出</span>
+						</div>
+						<div class="head_tab">
+							<el-tabs tab-position="top" class="head" @tab-click="handleClick_3">
+								<el-tab-pane label="生产统计">
+									<div class="inner_all">
+										<div class="inner_left_2">
+											<div class="inner_left_up">
+												<search-com ref="searchRef" class="search"
+													:searchdata="formSearchs[5].datas"
+													:searchform="formSearchs[5].forms" :remark="5" :btnForm="btnForm[5]"
+													@btnclick="btnClick">
+												</search-com>
+											</div>
+											<div class="inner_left_down">
+												<pltable-com :rowkey="'RowNumber'" :height="height" ref="tableRef_5"
+													:tabledata="tableData[5]" :tableheader="tableColumns[5]"
+													:tableloading="tableLoading[5]" :remark="5" :sysid="sysID[5].ID"
+													:isclear="isClear[5]" :pagination="tablePagination[5]"
+													@handlerowclick="handleRowClick" @pagechange="pageChange"
+													@pageSize="pageSize" @sortChange="sortChange">
+												</pltable-com>
+											</div>
+										</div>
+									</div>
+								</el-tab-pane>
+							</el-tabs>
+						</div>
+					</el-tab-pane>
+				</el-tabs>
+				<el-popover placement="right" width="80" trigger="click">
+					<div slot="reference" class="fix_down flex_around">
+						<img src="./img/user.svg" width="20px" height="20px" class="user" />
+						<div>{{userInfo.Name}}</div>
+						<i class="el-icon-arrow-right"></i>
+					</div>
+					<div class="flex_column login_span">
+						<span @click="editLogin">修改密码</span>
+						<span @click="exitLogin">退出登录</span>
+					</div>
+				</el-popover>
+			</div>
+
+			<form-dialog-com ref="loginForm" :title="'修改密码'" :dialogshow="dialogShow" :formdata="formData"
+				:formrules="formRules" :formcontroller="formController" @dialogbtnclick="dialogBtnClick">
+			</form-dialog-com>
+
+			<el-dialog title="更换单" :visible.sync="dialogOrder" width="80%">
+				<search-com ref="searchRef" class="search" :searchdata="formSearchs[10].datas"
+					:searchform="formSearchs[10].forms" :remark="10" :btnForm="btnForm[10]" @btnclick="btnClick">
+				</search-com>
+				<pltable-com :rowkey="'RowNumber'" :height="'400px'" :tabledata="tableData[10]" :rowstyle="rowStyle"
+					:cellstyle="cellStyle" ref="tableRef_10" :tableheader="tableColumns[10]"
+					:tableloading="tableLoading[10]" :remark="10" :sysid="sysID[10].ID" :isclear="isClear[10]"
+					:pagination="tablePagination[10]" :hasselect="true" :ismultiple="false" @selectfun="selectFun"
+					@pagechange="pageChange" @pageSize="pageSize" @sortChange="sortChange">
+				</pltable-com>
+
+				<span slot="footer" class="dialog-footer">
+					<el-button @click="dialogOrder = false">取 消</el-button>
+					<el-button type="primary" @click="sureChangeOrder">确 定</el-button>
+				</span>
+			</el-dialog>
+
+			<el-dialog title="预约上机" :visible.sync="dialog_1" width="50%">
+
+				<el-form label-width="200px" :model="ruleForm_0">
+					<el-form-item label="当前时间：" prop="StartDate">
+						{{currentDate}}
+					</el-form-item>
+					<el-form-item label="开机时间*：" prop="StartDate">
+						<el-date-picker v-model="ruleForm_0.StartDate" type="datetime" placeholder="选择预约时间"
+							value-format="yyyy-MM-dd HH:mm:00" format="yyyy-MM-dd HH:mm" placeholder="选择日期时间"
+							:picker-options="pickerOptions">
+						</el-date-picker>
+					</el-form-item>
+				</el-form>
+				<span slot="footer" class="dialog-footer">
+					<el-button @click="dialog_1 = false">取 消</el-button>
+					<el-button type="primary" @click="sureAppointmentStart">确 定</el-button>
+				</span>
+			</el-dialog>
+
+			<el-dialog title="预约停机" :visible.sync="dialog_end" width="50%">
+
+				<el-form label-width="200px" :model="ruleForm_1">
+					<el-form-item label="当前时间：" prop="StartDate">
+						{{currentDate}}
+					</el-form-item>
+					<el-form-item label="停机时间*：" prop="EndDate">
+						<el-date-picker v-model="ruleForm_1.EndDate" type="datetime" placeholder="选择预约时间"
+							value-format="yyyy-MM-dd HH:mm:00" format="yyyy-MM-dd HH:mm" placeholder="选择日期时间"
+							:picker-options="pickerOptions">
+						</el-date-picker>
+					</el-form-item>
+				</el-form>
+				<span slot="footer" class="dialog-footer">
+					<el-button @click="dialog_end = false">取 消</el-button>
+					<el-button type="primary" @click="sureAppointmentEnd">确 定</el-button>
+				</span>
+			</el-dialog>
+
+
+			<el-dialog title="批量停机" :visible.sync="dialog_start" width="50%">
+
+				<el-form label-width="200px" :model="ruleForm">
+					<el-form-item label="可选机台：" prop="MoldMergeBatchIDs">
+						<el-select clearable multiple v-model="ruleForm.MoldMergeBatchIDs" value-key="RowNumber">
+							<el-option v-for="(item,i) in appointmentData_2" :key="i" :label="item.LineName"
+								:value="item">
+							</el-option>
+						</el-select>
+					</el-form-item>
+				</el-form>
+				<span slot="footer" class="dialog-footer">
+					<el-button @click="dialog_start = false">取 消</el-button>
+					<el-button type="primary" @click="sureAoreParseOutfit_1">确 定</el-button>
+				</span>
+			</el-dialog>
+
+			<el-dialog :title="dialogTitle" :visible.sync="dialog_details" width="100%">
+				<pltable-com :rowkey="'RowNumber'" :height="'500px'" ref="tableRef_11" :tabledata="tableData[11]"
+					:tableheader="tableColumns[11]" :tableloading="tableLoading[11]" :remark="11" :sysid="sysID[11].ID"
+					:isclear="isClear[11]" :pagination="tablePagination[11]" @pagechange="pageChange"
+					@pageSize="pageSize" @sortChange="sortChange">
+				</pltable-com>
+			</el-dialog>
+
+			<el-dialog title="更换产品上机" :visible.sync="dialog_newBatch" width="100%">
+				<pltable-com :rowkey="'RowNumber'" :height="'500px'" ref="tableRef_18" :tabledata="tableData[18]"
+					:tableheader="tableColumns[18]" :tableloading="tableLoading[18]" :remark="18" :sysid="sysID[18].ID"
+					:isclear="isClear[18]" :pagination="tablePagination[18]" @pagechange="pageChange"
+					@pageSize="pageSize" @addnewbatchno="addnewbatchno" @sortChange="sortChange">
+				</pltable-com>
+			</el-dialog>
+
+			<el-dialog title="追加产品上机" :visible.sync="dialog_newBatch_2" width="100%">
+				<pltable-com :rowkey="'RowNumber'" :height="'500px'" ref="tableRef_19" :tabledata="tableData[19]"
+					:tableheader="tableColumns[19]" :tableloading="tableLoading[19]" :remark="18" :sysid="sysID[19].ID"
+					:isclear="isClear[19]" :pagination="tablePagination[19]" @pagechange="pageChange"
+					@pageSize="pageSize" @addnewbom="addnewbom" @sortChange="sortChange">
+				</pltable-com>
+			</el-dialog>
+
+		</div>
+	</body>
+	<script src="./js/vue.js"></script>
+	<script src="./js/index.js"></script>
+	<script src="./js/token.js"></script>
+	<script src="./js/axios.min.js"></script>
+	<script src="./js/DateJson.js"></script>
+	<script src="./js/echarts.js"></script>
+	<script src="./component/searchCom.js?ver=2"></script>
+	<script src="./component/formDialogCom.js"></script>
+	<script src="./component/plTable.js?ver=17"></script>
+	<script src="./js/plIndex.js?ver=3"></script>
+	<script type="text/javascript">
+		if (document.documentElement.clientWidth <= 1280) {
+			document.documentElement.style.fontSize = '10px';
+		} else {
+			document.documentElement.style.fontSize = document.documentElement.clientWidth / 1920 * 10 + 'px';
+		}
+	</script>
+	<script type="module">
+		import newFormatDate from "./js/newFormatDate.js?ver=1"
+		var app = new Vue({
+			el: "#app",
+			components: {
+				'search-com': searchCom,
+				'pltable-com': plTableCom,
+				'form-dialog-com': formDialogCom
+			},
+			data: {
+				dialog_newBatch: false,
+				dialog_newBatch_2: false,
+				currentDate: new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date()
+					.getDate() + ' ' + new Date().getHours() + ':' + new Date().getMinutes() + ':' + new Date()
+					.getSeconds(),
+				pickerOptions: {
+					disabledDate(time) {
+						let oneDay = 60 * 60 * 24 * 1000;
+						return time.getTime() < Date.now() - oneDay;
+					},
+					// selectableRange 用来限制时分秒的选择，这里要求只能选择当前时间之后到0点的时间点
+					// selectableRange: `${Date().split(" ")[4]} - 23:59:59`,
+				},
+				ruleForm: {
+					MoldMergeBatchIDs: ""
+				},
+				ruleForm_0: {
+					StartDate: ""
+				},
+				ruleForm_1: {
+					EndDate: ""
+				},
+				dialogTitle: '',
+				hasselect: [false, true, true, true, true, false, true, false],
+				disabled_1: [false, false, false],
+				dialogOrder: false,
+				dialogShow: false,
+				formData: {
+					Account: "",
+					Pwd: "",
+					NewPwd: "",
+					SurePwd: "",
+				},
+				formController: [{
+						label: "账号",
+						prop: "Account",
+						type: "input",
+						disabled: true
+					},
+					{
+						label: "密码",
+						prop: "Pwd",
+						type: "input",
+						disabled: true
+					},
+					{
+						label: "新密码",
+						prop: "NewPwd",
+						type: "input",
+						inputType: "password",
+					},
+					{
+						label: "确认密码",
+						prop: "SurePwd",
+						type: "input",
+						inputType: "password",
+					},
+				],
+				formRules: {
+					NewPwd: [{
+						required: true,
+						message: "新密码为必填项",
+						trigger: "blur"
+					}, ],
+					SurePwd: [{
+						required: true,
+						message: "二次密码为必填项",
+						trigger: "blur"
+					}, ],
+				},
+				targetTag_1: -1,
+				targetTag_4: -1,
+				height: window.innerHeight - 180 + 'px',
+				height_2: window.innerHeight - 140 + 'px',
+				lines: [],
+				submitForm: [{
+					OutfitID: "",
+					LineName: "",
+				}, {}],
+				userInfo: {
+					Name: ''
+				},
+				activeName: 'left_0',
+				activeName_2: 'firstTab_0',
+				rightForm: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+				reasons: [{
+					name: '机台维修'
+				}, {
+					name: '模具维修'
+				}],
+				first_list: [{
+					remarkTb: 0,
+					height: window.innerHeight - 180 + 'px'
+				}, {
+					remarkTb: 12,
+					height: window.innerHeight - 140 + 'px'
+				}, {
+					remarkTb: 13,
+					height: window.innerHeight - 140 + 'px'
+				}, {
+					remarkTb: 14,
+					height: window.innerHeight - 180 + 'px'
+				}, {
+					remarkTb: 15,
+					height: window.innerHeight - 140 + 'px'
+				}, {
+					remarkTb: 16,
+					height: window.innerHeight - 140 + 'px'
+				}, {
+					remarkTb: 17,
+					height: window.innerHeight - 140 + 'px'
+				}],
+				rightData_0: [{
+					label: '材质',
+					value: 'Extend7'
+				}, {
+					label: '单重',
+					value: 'Weight'
+				}, {
+					label: '颜色',
+					value: 'Extend11'
+				}, {
+					label: '数量',
+					value: 'Qty'
+				}, {
+					label: '完成数',
+					value: 'CompletionQty'
+				}, {
+					label: '状态',
+					value: 'ProductionStatusName'
+				}],
+				rightData_1: [{
+					label: '材质',
+					value: 'Extend7'
+				}, {
+					label: '单重',
+					value: 'Weight'
+				}, {
+					label: '颜色',
+					value: 'Extend11'
+				}, {
+					label: '数量',
+					value: 'Qty'
+				}, {
+					label: '完成数',
+					value: 'CompletionQty'
+				}, {
+					label: '状态',
+					value: 'ProductionStatusName'
+				}],
+				rightData_2: [{
+					label: '材质',
+					value: 'Extend7'
+				}, {
+					label: '单重',
+					value: 'Weight'
+				}, {
+					label: '颜色',
+					value: 'Extend11'
+				}, {
+					label: '数量',
+					value: 'Qty'
+				}, {
+					label: '完成数',
+					value: 'CompletionQty'
+				}, {
+					label: '状态',
+					value: 'ProductionStatusName'
+				}],
+				rightData_3: [{
+					label: '订单',
+					value: 'OrderNo'
+				}, {
+					label: '单重',
+					value: 'Weight'
+				}, {
+					label: '欠数',
+					value: 'OweQty'
+				}, {
+					label: '模具',
+					value: 'Qty'
+				}, {
+					label: '模穴数',
+					value: 'Extend10'
+				}],
+				rightData_4: [{
+					label: '日期',
+					value: 'StartDate'
+				}, {
+					label: '开始',
+					value: 'CreatedOn'
+				}, {
+					label: '订单',
+					value: 'OrderNo'
+				}, {
+					label: '材质',
+					value: 'Extend7'
+				}, {
+					label: '单重',
+					value: 'Weight'
+				}, {
+					label: '颜色',
+					value: 'Extend11'
+				}, {
+					label: '数量',
+					value: 'Qty'
+				}, {
+					label: '完成数',
+					value: 'CompletionQty'
+				}, {
+					label: '欠数',
+					value: 'OweQty'
+				}, {
+					label: '状态',
+					value: 'ProductionStatusName'
+				}],
+				rightData_5: [{
+					label: '订单',
+					value: 'OrderNo'
+				}, {
+					label: '单重',
+					value: 'Weight'
+				}, {
+					label: '颜色',
+					value: 'Extend11'
+				}, {
+					label: '欠数',
+					value: 'OweQty'
+				}, {
+					label: '模具',
+					value: 'Extend12'
+				}, {
+					label: '模穴数',
+					value: 'Extend10'
+				}, {
+					label: '停机原因',
+					value: 'Remark1'
+				}],
+				rightData_6: [{
+					label: '订单',
+					value: 'OrderNo'
+				}, {
+					label: '单重',
+					value: 'Weight'
+				}, {
+					label: '颜色',
+					value: 'Extend11'
+				}, {
+					label: '模具',
+					value: 'Extend12'
+				}, {
+					label: '模穴数',
+					value: 'Extend10'
+				}, {
+					label: '停机原因',
+					value: 'Remark1'
+				}],
+				rightData_7: [{
+					label: '订单',
+					value: 'OrderNo'
+				}, {
+					label: '单重',
+					value: 'Weight'
+				}, {
+					label: '颜色',
+					value: 'Extend11'
+				}, {
+					label: '模具',
+					value: 'Extend12'
+				}, {
+					label: '模穴数',
+					value: 'Extend10'
+				}, {
+					label: '停机原因',
+					value: 'Remark1'
+				}],
+				rightData_9: [{
+					label: '订单',
+					value: 'OrderNo'
+				}, {
+					label: '单重',
+					value: 'Weight'
+				}, {
+					label: '颜色',
+					value: 'Extend11'
+				}, {
+					label: '欠数',
+					value: 'OweQty'
+				}, {
+					label: '不良数',
+					value: 'BadQty'
+				}, {
+					label: '模具',
+					value: 'Extend12'
+				}, {
+					label: '模穴数',
+					value: 'Extend10'
+				}, {
+					label: '停机原因',
+					value: 'Remark1'
+				}],
+				formSearchs: [{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					},
+					{
+						datas: {},
+						forms: [],
+					}
+				],
+				btnForm: [
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[]
+				],
+				tableData: [
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[]
+				],
+				tableColumns: [
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[]
+				],
+				tableLoading: [false, false, false, false, false, false, false, false, false, false, false, false,
+					false, false, false, false, false, false, false, false
+				],
+				isClear: [false, false, false, false, false, false, false, false, false, false, false, false, false,
+					false, false, false, false, false, false, false
+				],
+				tablePagination: [{
+						pageIndex: 1,
+						pageSize: 0,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 0,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 13,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 13,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 0,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 13,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 13,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 13,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 13,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 13,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 13,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 0,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 0,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 0,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 0,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 0,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 0,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 0,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 0,
+						pageTotal: 0
+					},
+					{
+						pageIndex: 1,
+						pageSize: 0,
+						pageTotal: 0
+					},
+				],
+				adminLoading: false,
+				home_tag_1: 0,
+				selectionData: [
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[]
+				],
+				sysID: [{
+					ID: 7892
+				}, {
+					ID: 7828
+				}, {
+					ID: 7830
+				}, {
+					ID: 7827
+				}, {
+					ID: 7829
+				}, {
+					ID: 7890
+				}, {
+					ID: 7825
+				}, {
+					ID: 36
+				}, {
+					ID: 36
+				}, {
+					ID: 36
+				}, {
+					ID: 7830
+				}, {
+					ID: 7822
+				}, {
+					ID: 7892
+				}, {
+					ID: 7892
+				}, {
+					ID: 7892
+				}, {
+					ID: 7892
+				}, {
+					ID: 7892
+				}, {
+					ID: 7892
+				}, {
+					ID: 7821
+				}, {
+					ID: 7819
+				}],
+				dialog_start: false,
+				dialog_end: false,
+				appointmentData: [],
+				appointmentData_2: [],
+				orgData: [],
+				templateorgData: [],
+				dialog_1: false,
+				appointmentTag: 0,
+				appointmentTag_2: 0,
+				time_1: null,
+				dialog_details: false,
+				labelStatus1: 0,
+				labelStatus2: 0,
+				labelStatus3: 0,
+				currentRow: '',
+				addnew_tag: 0,
+				Status1: [{
+					label: '全部',
+					value: ''
+				}, {
+					label: '未开始',
+					value: 21
+				}, {
+					label: '预约开始',
+					value: 200
+				}, {
+					label: '生产中',
+					value: 22
+				}, {
+					label: '预约停机',
+					value: 201
+				}, {
+					label: '已停机',
+					value: 28
+				}, {
+					label: '已完成',
+					value: 25
+				}],
+				Status2: [{
+					label: '全部',
+					value: ''
+				}, {
+					label: '单任务',
+					value: 1
+				}, {
+					label: '多任务',
+					value: 1
+				}],
+				Status3: [{
+					label: '全部',
+					value: ''
+				}, {
+					label: '有追加',
+					value: 0
+				}, {
+					label: '无追加',
+					value: 1
+				}, {
+					label: '进度>50%',
+					value: 2
+				}],
+
+			},
+			created() {
+				// let submitData = []
+				// submitData.push({ dicID: 36, OrganizeID: 94, OutfitStatus: 3 });
+				// this.generalSaveData(submitData,0)
+				this.adminLoading = true;
+				this.min_2();
+				this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
+				if (!this.userInfo) {
+					// this.$message.error("请先登录！");
+					// setTimeout(() => {
+					//     window.location.href = "login.html";
+					// }, 300);
+					// 自动登录
+					this.login()
+				} else {
+					this.getTableHeader();
+					this.getLineData();
+				}
+
+				// this.setHeight();
+				for (var i = 0; i < 53; i++) {
+					// this.tableData[1].push({ RowNumber: i, LineName: '线别' + i, MaterialName: "产品" + i, Status: i })
+					// this.tableData[4].push({ RowNumber: i, LineName: '线别' + i, MaterialName: "产品" + i, Status: i })
+				}
+
+			},
+			watch: {},
+			mounted() {
+				window.onresize = () => {
+					this.setHeight()
+				}
+			},
+			methods: {
+				lookdetails(row) {
+					this.currentRow = row;
+					if (row.ProductionStatus == 21) {
+						this.formSearchs[11].datas["BatchNo"] = '';
+						this.formSearchs[11].datas["ProductionStatus"] = 21;
+					} else {
+						this.formSearchs[11].datas["BatchNo"] = row.BatchNo;
+						this.formSearchs[11].datas["ProductionStatus"] = '';
+					}
+					this.formSearchs[11].datas["MaterialID"] = row.MaterialID;
+					this.dataSearch(11);
+					this.dialog_details = true;
+				},
+				min_2() {
+					if (this.time_1) {
+						clearTimeout(this.time_1)
+					}
+					this.getAppoinmentData();
+					if (this.tableColumns[1].length != 0) {
+						this.dataSearch(1);
+					}
+					this.time_1 = setTimeout(() => {
+						_this.min_2()
+					}, 1000 * 60 * 3)
+				},
+				// 选中机台就禁用
+				changeline(row, val, prop, index) {
+					let LineID = Number(val.value);
+					this.$set(row, 'LineIDTemporary', LineID);
+					this.$set(row, 'LineName', val.OrganizeName);
+					this.templateorgData.forEach(c => {
+						if (this.tableData[12].findIndex(a => a.LineIDTemporary == c.OrganizeID) != -1) {
+							this.$set(c, 'disabled', true);
+						} else {
+							this.$set(c, 'disabled', false);
+						}
+
+						if (c.OrganizeID == val.OrganizeID) {
+							this.$set(c, 'disabled', true);
+						}
+					})
+
+					let newOrgData = this.templateorgData.filter(c => !c.disabled);
+					this.$set(this, 'orgData', newOrgData);
+
+				},
+				// 获取可批量停机数据
+				getAppoinmentData(remarkTbName, remarkTb) {
+					this.appointmentData_2 = [];
+					this.appointmentData_3 = [];
+					this.orgData = [];
+					this.templateorgData = [];
+					axiosPostRequst(`/APSAPI/APSData`, {
+							dicID: 7892,
+							ProductionStatus: [22, 28, 200, 201],
+							sort: "LineID asc"
+						})
+						.then(function(res) {
+							const {
+								data,
+								forms,
+								result,
+								msg
+							} = res;
+							if (result) {
+								_this.appointmentData_2 = data.filter(a => a.ProductionStatus == 22);
+								_this.appointmentData_3 = data;
+							}
+						}).catch(() => {
+
+						})
+
+					axiosPostRequst(`/APSAPI/APSData`, {
+							dicID: 3026,
+							Status: 1,
+							OutfitStatus: 0,
+							OrganizeTypeID: 6,
+							ProcessValues: '注塑'
+
+						})
+						.then(function(res) {
+							const {
+								data,
+								forms,
+								result,
+								msg
+							} = res;
+							if (result) {
+								if (data.length != 0) {
+									data.forEach(a => {
+										_this.$set(a, 'label', a.OrganizeName);
+										_this.$set(a, 'value', a.OrganizeID);
+										_this.$set(a, 'disabled', false);
+									})
+								}
+								_this.orgData = data;
+								_this.templateorgData = JSON.parse(JSON.stringify(data));
+								if (remarkTbName) {
+									_this.dataSearch(remarkTb)
+								}
+							}
+						}).catch(() => {
+
+						})
+				},
+				// 登录
+				login() {
+					this.adminLoading = true;
+					let param = new URLSearchParams()
+					param.append('Account', 'admin')
+					param.append('Pwd', '888666')
+					//账号密码验证成功
+					axios.post("http://192.168.101.160/Login/CheckAccount", param, {
+							headers: {
+								'Content-Type': 'application/x-www-form-urlencoded'
+							}
+						})
+						.then(function(response) {
+							if (response.data.result == true) {
+								_this.adminLoading = false;
+								localStorage.setItem('url', 'http://192.168.101.160');
+								setCookie("token", response.data.token);
+								localStorage.setItem('userInfo', JSON.stringify(response.data));
+								_this.getTableHeader();
+								_this.getLineData();
+
+							} else {
+								_this.adminLoading = false;
+								_this.$message({
+									message: response.data.msg,
+									type: 'error'
+								});
+							}
+						})
+						.catch(function(error) {
+							console.log(error);
+
+						});
+				},
+				// 获取高度
+				setHeight() {
+					setTimeout(() => {
+						let rem = (document.documentElement.clientHeight - 180) + 'px';
+						let rem2 = (document.documentElement.clientHeight - 140) + 'px';
+						_this.$set(_this, 'height', rem);
+						_this.$set(_this, 'height_2', rem2);
+						_this.first_list.forEach((a, i) => {
+							if (i == 0 || i == 3) {
+								_this.$set(a, 'height', _this.height)
+							} else {
+								_this.$set(a, 'height', _this.height_2)
+							}
+						})
+					}, 600)
+				},
+				// 获取机台
+				getLineData() {
+					let form = {};
+					form["dicID"] = 3026;
+					form["rows"] = 0;
+					form["OrganizeTypeID"] = 6;
+					form["ProcessValues"] = '注塑';
+					axiosPostRequst(`/APSAPI/APSData`, form)
+						.then(function(res) {
+							const {
+								data,
+								forms,
+								result,
+								msg
+							} = res;
+							if (result) {
+								_this.lines = [];
+								if (data.length != 0) {
+									data.forEach(x => {
+										let LineName = '';
+										if (x.OutfitStatus == 1) {
+											LineName = x.OrganizeName + "(暂停)"
+										} else if (x.OutfitStatus == 2) {
+											LineName = x.OrganizeName + "(使用中)"
+										} else if (x.OutfitStatus == 3) {
+											LineName = x.OrganizeName + "(预约中)"
+										} else {
+											LineName = x.OrganizeName
+										}
+										_this.lines.push({
+											ProductionStatus: x.ProductionStatus,
+											LineName: LineName,
+											OutfitID: x.OrganizeID,
+											OutfitStatus: x.OutfitStatus,
+											MaterialID: x.MaterialID,
+											MaterialName: x.MaterialName
+										})
+									})
+								}
+							}
+						}).catch(() => {
+
+						})
+				},
+				// 获取表头
+				getTableHeader() {
+					let IDs = this.sysID;
+					axiosPostRequst(`/APSAPI/GetConfig`, IDs)
+						.then(function(res) {
+							const {
+								datas,
+								forms,
+								result,
+								msg
+							} = res;
+							if (result) {
+								debugger
+								// 获取每个表头
+								datas.some((m, i) => {
+									m.forEach((n) => {
+										// 进行验证
+										_this.verifyDta(n);
+										if (n.childrens && n.children.length != 0) {
+											n.childrens.forEach((x) => {
+												_this.verifyDta(x);
+											});
+										}
+									});
+									_this.$set(_this.tableColumns, i, m);
+								});
+								// 获取查询的初始化字段 组件 按钮
+								forms.some((x, z) => {
+									_this.$set(_this.formSearchs[z].datas, "dicID", IDs[z].ID);
+									x.forEach((y) => {
+										if (y.prop && y.value) {
+											_this.$set(_this.formSearchs[z].datas, [y.prop], y
+												.value);
+										} else {
+											_this.$set(_this.formSearchs[z].datas, [y.prop], "");
+										}
+									});
+									_this.$set(_this.formSearchs[z], "forms", x);
+								});
+								_this.formSearchs[12].datas["ProductionStatus_2"] = 21;
+								_this.formSearchs[13].datas["ProductionStatus_2"] = 200;
+								_this.formSearchs[14].datas["ProductionStatus_2"] = 22;
+								_this.formSearchs[15].datas["ProductionStatus_2"] = 201;
+								_this.formSearchs[16].datas["ProductionStatus_2"] = 25;
+								_this.formSearchs[16].datas["EndDate"] = [newFormatDate.formatSevenDate(),
+									newFormatDate.formatTodayDate()
+								];
+								_this.formSearchs[17].datas["ProductionStatus_2"] = 28;
+								_this.getTableData(_this.formSearchs[0].datas, 0);
+
+								_this.tableColumns.forEach((a, i) => {
+									if (i == 0) {
+										let newTable = a.filter(b => b.prop != 'Extend12')
+										_this.$set(_this.tableColumns, i, newTable);
+									}
+									if (i == 12 || i == 14 || i == 16 || i == 17) {
+
+										let newTable = a.filter(b => b.prop != 'AppointmentTime')
+
+										_this.$set(_this.tableColumns, i, newTable);
+									}
+								})
+							}
+						}).catch(() => {
+
+						})
+				},
+				// 验证数据
+				verifyDta(n) {
+
+					for (let name in n) {
+						if (
+							(name == "component" && n[name]) ||
+							(name == "button" && n[name]) ||
+							(name == "active" && n[name])
+						) {
+							n[name] = eval("(" + n[name] + ")");
+						}
+					}
+				},
+				handleClick(tab) {
+					if (tab.index == 0) {
+						this.adminLoading = true;
+						this.dataSearch(_this.home_tag_1)
+					} else if (tab.index == 1) {
+						this.adminLoading = true;
+						this.dataSearch(1)
+					} else if (tab.index == 2) {
+						this.adminLoading = true;
+						this.dataSearch(5)
+					} else if (tab.index == 3) {
+						this.adminLoading = true;
+						this.dataSearch(6)
+
+					} else if (tab.index == 4) {
+						if (this.tableData[8].length == 0) {
+							this.dataSearch(8)
+						}
+					}
+					// if (tab.index == 3) {
+					//     this.$nextTick(() => {
+					//         _this.$refs.tableRef_6.$refs.plxTable.doLayout();
+					//     })
+					// } else if (tab.index == 4) {
+					//     this.$nextTick(() => {
+					//         _this.$refs.tableRef_8.$refs.plxTable.doLayout();
+					//     })
+					// }
+				},
+				handleClick_1(tab) {
+					this.activeName_2 = tab.name;
+					let num = parseInt(tab.name.substring(9));
+					this.home_tag_1 = num;
+
+					this.dataSearch(num);
+
+					// if (tab.index == 0) {
+					//     this.hasselect = false;
+					//     this.formSearchs[0].datas["ProductionStatus"] = [21, 22, 28];
+					//     this.$set(this.disabled_1, 0, true);
+					//     this.$set(this.disabled_1, 1, true);
+
+					//     // this.$set(this.disabled_1, 1, false);
+					//     // this.$set(this.disabled_1, 2, false);
+					// } else if (tab.index == 1) {
+					//     this.hasselect = true;
+					//     this.formSearchs[0].datas["ProductionStatus"] = 21; // 已下达的数据
+					//     this.$set(this.disabled_1, 0, false);
+					//     this.$set(this.disabled_1, 1, true);
+					//     // this.$set(this.disabled_1, 1, true);
+					//     // this.$set(this.disabled_1, 2, true);
+					// } else if (tab.index == 2) {
+					//     this.hasselect = true;
+					//     this.formSearchs[0].datas["ProductionStatus"] = 22; // 生产中
+					//     this.$set(this.disabled_1, 0, true);
+					//     this.$set(this.disabled_1, 1, false);
+					//     // this.$set(this.disabled_1, 2, false);
+					// } else if (tab.index == 3) {
+					//     this.hasselect = false;
+					//     this.formSearchs[0].datas["ProductionStatus"] = 25; // 已完成
+					//     this.$set(this.disabled_1, 0, true);
+					//     this.$set(this.disabled_1, 1, true);
+					//     // this.$set(this.disabled_1, 1, true);
+					//     // this.$set(this.disabled_1, 2, true);
+					// } else if (tab.index == 4) {
+					//     this.hasselect = true;
+					//     this.formSearchs[0].datas["ProductionStatus"] = 28; // 停机
+					//     this.$set(this.disabled_1, 0, true);
+					//     this.$set(this.disabled_1, 1, false);
+					//     // this.$set(this.disabled_1, 1, false);
+					//     // this.$set(this.disabled_1, 2, true);
+					// } else if (tab.index == 5) {
+					//     this.hasselect = false;
+					//     this.formSearchs[0].datas["ProductionStatus"] = 26; // 未下达
+					//     this.$set(this.disabled_1, 0, true);
+					//     // this.$set(this.disabled_1, 1, true);
+					//     // this.$set(this.disabled_1, 2, true);
+					// }
+					// this.dataSearch(0);
+				},
+				handleClick_2(tab) {
+					let newIndex = parseInt(tab.index) + 1;
+					if (this.tableData[newIndex].length == 0) {
+						this.dataSearch(newIndex)
+					}
+					// if (tab.index == 1) {
+					//     this.$nextTick(() => {
+					//         _this.$refs.tableRef_2.$refs.plxTable.doLayout();
+					//     })
+					// } else if (tab.index == 2) {
+					//     this.$nextTick(() => {
+					//         _this.$refs.tableRef_3.$refs.plxTable.doLayout();
+					//     })
+					// }
+				},
+				handleClick_3(tab) {
+					let newIndex = parseInt(tab.index) + 4;
+					if (this.tableData[newIndex].length == 0) {
+						this.dataSearch(newIndex)
+					}
+					// if (tab.index == 1) {
+					//     this.$nextTick(() => {
+					//         _this.$refs.tableRef_5.$refs.plxTable.doLayout();
+					//     })
+					// }
+				},
+				handleClick_4(tab) {
+					// if (tab.index == 0) {
+					//     this.$nextTick(() => {
+					//         _this.$refs.tableRef_6.$refs.plxTable.doLayout();
+					//     })
+					// } else {
+					//     this.$nextTick(() => {
+					//         _this.$refs.tableRef_7.$refs.plxTable.doLayout();
+					//     })
+					// }
+				},
+				handleClick_5(tab) {
+					// if (tab.index == 0) {
+					//     this.$nextTick(() => {
+					//         _this.$refs.tableRef_8.$refs.plxTable.doLayout();
+					//     })
+					// } else {
+					//     this.$nextTick(() => {
+					//         _this.$refs.tableRef_9.$refs.plxTable.doLayout();
+					//     })
+					// }
+				},
+				// 统一渲染按钮事件
+				btnClick(methods, parms, index, remarkTb) {
+					if (parms) {
+						// 下标 要用的数据 标题 ref
+						this[methods](remarkTb, index, parms);
+					} else {
+						this[methods](remarkTb, index);
+					}
+				},
+				// 查询
+				dataSearch(remarkTb) {
+					this.tagRemark = remarkTb;
+					this.tableData[remarkTb] = [];
+					this.$set(this.tableLoading, remarkTb, true);
+					this.$set(this.isClear, remarkTb, true);
+					this.tablePagination[remarkTb].pageIndex = 1;
+					this.getTableData(this.formSearchs[remarkTb].datas, remarkTb);
+					setTimeout(() => {
+						this.$set(this.isClear, remarkTb, false);
+					});
+				},
+				// 获取表格数据
+				getTableData(form, remarkTb) {
+					this.$set(this.tableLoading, remarkTb, true);
+					form["rows"] = this.tablePagination[remarkTb].pageSize;
+					form["page"] = this.tablePagination[remarkTb].pageIndex;
+					if (remarkTb == 0 || remarkTb == 12 || remarkTb == 13 || remarkTb == 14 || remarkTb == 15 ||
+						remarkTb == 16 || remarkTb == 17) {
+						axiosPostRequst(`/APSAPI/GetMergeBOMData`, form)
+							.then(function(res) {
+								_this.adminLoading = false;
+								const {
+									data,
+									count,
+									result,
+									msg
+								} = res;
+								if (result) {
+									if (data.length != 0) {
+										data.forEach(a => {
+											if (a.AppointmentTime) {
+												a.AppointmentTime = a.AppointmentTime.substring(8, 10) +
+													'日' + a.AppointmentTime.substring(11, 13) + '点'
+											}
+										})
+									}
+									if (remarkTb == 12) {
+										if (data.length != 0) {
+											data.forEach(a => {
+												_this.$set(a, 'LineIDTemporary', '');
+												if (a.ProductionStatus == 21 && a.ParentID == -1) {
+													_this.$set(a, 'update', true);
+													_this.$set(a, '单纯线别', _this.orgData);
+												}
+											})
+
+										}
+									}
+
+									_this.$set(_this.tableLoading, remarkTb, false);
+									_this.$set(_this.tableData, remarkTb, data);
+									_this.$set(_this.tablePagination[remarkTb], "pageTotal", count);
+								} else {
+									_this.$set(_this.tableLoading, remarkTb, false);
+									_this.$message({
+										message: msg,
+										type: "error",
+										dangerouslyUseHTMLString: true,
+									});
+								}
+							}).catch(() => {
+								_this.adminLoading = false;
+							})
+					} else {
+						axiosPostRequst(`/APSAPI/APSData`, form)
+							.then(function(res) {
+								_this.adminLoading = false;
+								const {
+									data,
+									count,
+									result,
+									msg
+								} = res;
+								if (result) {
+									// let totalQty = 0;
+									// let SecondNum = 0;
+									// if (remarkTb == 11) {
+									//     data.forEach(e => {
+									//         totalQty += parseFloat(e.VirtualQty);
+									//         SecondNum += parseFloat(e.SecondNum);
+									//     })
+									// }
+									// let secondTime = parseInt(SecondNum)//将传入的秒的值转化为Number
+									// let result = '';
+									// if (secondTime > 0) {
+									//     let min = 0// 初始化分
+									//     let h = 0// 初始化小时
+
+									//     if (secondTime > 60) {//如果秒数大于60，将秒数转换成整数
+									//         min = parseInt(secondTime / 60)//获取分钟，除以60取整数，得到整数分钟
+									//         secondTime = parseInt(secondTime % 60)//获取秒数，秒数取佘，得到整数秒数
+									//         if (min > 60) {//如果分钟大于60，将分钟转换成小时
+									//             h = parseInt(min / 60)//获取小时，获取分钟除以60，得到整数小时
+									//             min = parseInt(min % 60) //获取小时后取佘的分，获取分钟除以60取佘的分
+									//         }
+									//     }
+									//     result = `${h.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}:${secondTime.toString().padStart(2, '0')}`
+									// }
+									_this.dialogTitle = '该产品持续生产:' + _this.currentRow.SecondNum + '      ；' +
+										'    预计生产数量总计：' + _this.currentRow.VirtualQty + '个';
+									_this.$set(_this.tableLoading, remarkTb, false);
+									_this.$set(_this.tableData, remarkTb, data);
+									_this.$set(_this.tablePagination[remarkTb], "pageTotal", count);
+								} else {
+									_this.$set(_this.tableLoading, remarkTb, false);
+									_this.$message({
+										message: msg,
+										type: "error",
+										dangerouslyUseHTMLString: true,
+									});
+								}
+							}).catch(() => {
+								_this.adminLoading = false;
+							})
+					}
+				},
+				// 单击行
+				handleRowClick(row, remarkTb, index) {
+					if (remarkTb == 0) {
+						if (this.home_tag_1 == 1) {
+							this.formSearchs[0]["MaterialID"] = row.MaterialID
+						}
+						if (row.ParentID != -1) {
+							this.$set(this.disabled_1, 0, true);
+							this.$set(this.disabled_1, 1, true);
+							return
+						}
+						if (row.IsDifficent == 1) {
+							this.$set(this.disabled_1, 1, false);
+						} else {
+							this.$set(this.disabled_1, 1, true);
+						}
+						if (row.ProductionStatus == 21) {
+							this.$set(this.disabled_1, 0, false);
+						} else {
+							this.$set(this.disabled_1, 0, true);
+						}
+					}
+					if (remarkTb == 1) {
+						this.targetTag_1 = index;
+					} else if (remarkTb == 4) {
+						this.targetTag_4 = index;
+					}
+					this.$set(this.rightForm, remarkTb, row);
+				},
+				// 第几页
+				pageChange(val, remarkTb, filtertb) {
+					this.$set(this.tablePagination[remarkTb], "pageIndex", val);
+					this.getTableData(this.formSearchs[remarkTb].datas, remarkTb);
+				},
+				// 页数
+				pageSize(val, remarkTb, filtertb) {
+					this.$set(this.tablePagination[remarkTb], "pageSize", val);
+					this.getTableData(this.formSearchs[remarkTb].datas, remarkTb);
+				},
+				// 排序
+				sortChange(order, prop, remarkTb, filtertb, row, index) {
+					if (filtertb == -100) {
+						// 改变父表格的行数据
+						this.changeTableRowData(remarkTb, row, index);
+						return;
+					}
+					if (order) {
+						if (order === "desc") {
+							this.formSearchs[remarkTb].datas["sort"] = prop + " DESC";
+						} else {
+							this.formSearchs[remarkTb].datas["sort"] = prop + " ASC";
+						}
+					} else {
+						this.formSearchs[remarkTb].datas["sort"] = null;
+					}
+					this.dataSearch(remarkTb);
+				},
+				// 选择数据
+				selectFun(data, remarkTb, row) {
+					this.selectionData[remarkTb] = data;
+				},
+				// 改变父组件表格行数据
+				changeTableRowData(remarkTb, row, index) {
+					for (let name in row) {
+						this.$set(this.tableData[remarkTb][index], name, row[name]);
+					}
+				},
+				// 修改密码
+				editLogin() {
+					this.formData.Account = this.userInfo.Account;
+					this.formData.Pwd = this.userInfo.dev_Account.Pwd;
+					this.dialogShow = true;
+				},
+				// 确定修改密码
+				dialogBtnClick(val) {
+					let newData = [];
+					let obj = {};
+					if (val) {
+						if (this.formData.NewPwd != this.formData.SurePwd) {
+							this.$message.error("两次输入的密码不一致！");
+						} else {}
+						obj["Account"] = this.formData.Account;
+						obj["Pwd"] = this.formData.NewPwd;
+						obj["dicID"] = 25;
+						newData.push(obj);
+						axiosPostRequst(`/APSAPI/SaveData`, newData)
+							.then(function(res) {
+								const {
+									result,
+									data,
+									count,
+									msg
+								} = res;
+								if (result) {
+									_this.$message({
+										message: msg,
+										type: "success",
+										dangerouslyUseHTMLString: true,
+									});
+									setTimeout(() => {
+										window.location.href = 'login.html'
+										localStorage.clear()
+									}, 200)
+								} else {
+									_this.$message({
+										message: msg,
+										type: "error",
+										dangerouslyUseHTMLString: true,
+									});
+								}
+								_this.dialogShow = false;
+							})
+					} else {
+						this.$refs.loginForm.$refs.formData.resetFields();
+						this.dialogShow = false;
+					}
+				},
+				// 退出登录
+				exitLogin() {
+					this.$confirm("确定要退出吗？")
+						.then((_) => {
+							window.location.href = 'login.html'
+							localStorage.clear()
+						})
+						.catch((_) => {});
+				},
+				// 选择机台
+				setLineName(val, index) {
+					console.log(this.submitForm[index])
+				},
+				/////////////////////////订单模块的事件////////////
+				// 新追加按钮
+				addoutfitnew(row, val, prop, index, remarkTb) {
+					this.$confirm('确定追加吗？').then((res) => {
+						let newRow = _this.tableData[remarkTb].filter(a => a.MoldMergeBatchID == row
+							.ParentID);
+						// let newData_1 = this.selectionData[0].filter(a => {return a.ProductionStatus == 21 && a.IsNew} ); //添加新批次的订单
+						// let newData_1 = this.selectionData[0].filter(a => {return a.ProductionStatus == 21 && a.IsNew} ); //直接追加生产的订单
+						let obj = {
+							dicID: 98,
+							JudgeTag1: 2,
+							OrderBOMID: row.OrderBOMID,
+							OutfitID: newRow[0].LineID,
+							BatchNo: newRow[0].BatchNo,
+							ProductionStatus: 22,
+							BOMStartDate: newFormatDate.formatTodayDateDay()
+						}
+						let newData = [];
+						newData.push(obj);
+						_this.generalSaveData(newData, remarkTb);
+					})
+
+				},
+				// // 新建批次按钮
+				// addnewbatchno(row) {
+				//     this.$confirm('确定新添加一个批次？').then((res) => {
+				//         debugger
+				//         let newRow = _this.tableData[12].filter(a => a.MoldMergeBatchID == row.ParentID);
+				//         // let obj = {
+				//         //     dicID: 98,
+				//         //     JudgeTag1: 1,
+				//         //     OrderBOMID: row.OrderBOMID,
+				//         //     BatchNo:row.BatchNo,
+				//         //     OutfitID: newRow[0].LineID,
+				//         //     ProductionStatus: 22,
+				//         //     BOMStartDate: newFormatDate.formatTodayDateDay()
+				//         // }
+				//         // 能获取到这个的批次号，直接更新7892合并表的机台
+				//         let newData = [];
+				//         newData.push(obj);
+				//         _this.generalSaveData(newData, 0);
+				//     })
+
+				// },
+				// 追加
+				addOutfit() {
+					if (Object.keys(this.rightForm[0]).length == 0) {
+						this.$message.error("请单击选择需要追加的数据！");
+					} else {
+						if (this.rightForm[0].IsDifficent != 1) {
+							this.$message.error("只能还有待上机的数据才能追加！")
+						} else {
+
+							this.$confirm('确认是否追加吗？').then((res) => {
+								let submitData = [];
+								_this.adminLoading = true;
+								// 保存合并后的机台数据
+								let obj1 = JSON.parse(JSON.stringify(_this.rightForm[0]));
+								obj1["JudgeTag"] = 2;
+								obj1["dicID"] = 7892;
+								submitData.push(obj1);
+								_this.generalSaveData(submitData, 0);
+
+							}).catch(() => {})
+						}
+					}
+				},
+				// 上机 有效的方法
+				upOutfit() {
+					if (Object.keys(this.rightForm[0]).length == 0) {
+						this.$message.error("请单击选择需要上机的数据！");
+					} else {
+						if (this.rightForm[0].ParentID != -1) {
+							this.$message.error("只能单击合并后的父级进行上机！")
+						} else {
+							if (this.rightForm[0].IsAppointment) {
+								this.$message.error("已设置开机预约，无需再次上机！")
+								return
+							}
+							if (!this.submitForm[0].OutfitID) {
+								this.$message.error("请选择要上机的机台！");
+							} else {
+								this.$confirm('确认是否上机吗？').then((res) => {
+									let submitData = [];
+									_this.adminLoading = true;
+									let obj1 = JSON.parse(JSON.stringify(_this.rightForm[0]));
+									if (_this.rightForm[0].ProductionStatus == 21) {
+										// 保存合并后的机台数据
+										obj1["LineID"] = _this.submitForm[0].OutfitID;
+										obj1["JudgeTag"] = 1;
+									} else if (_this.rightForm[0].ProductionStatus == 28) {
+										obj1["JudgeTag"] = 3;
+									}
+									obj1["ProductionStatus"] = 22;
+									obj1["dicID"] = 7892;
+									submitData.push(obj1);
+									// 机台显示被占用
+									submitData.push({
+										OrganizeID: _this.submitForm[0].OutfitID,
+										dicID: 36,
+										OutfitStatus: 2
+									});
+									_this.generalSaveData(submitData, 0);
+									_this.submitForm[0].OutfitID = ""
+
+								}).catch(() => {
+
+								})
+
+							}
+						}
+					}
+				},
+				// 下机
+				downOutfit() {
+					if (Object.keys(this.rightForm[0]).length == 0) {
+						this.$message.error("请单击选择需要下机的订单！");
+					} else if (this.rightForm[0].ProductionStatus != 22 && this.rightForm[0].ProductionStatus !=
+						28) { // 生产中，停机 完成的才可下机
+						this.$message.error("该订单不符合下机条件！");
+					} else {
+						this.$confirm('确认是否下机吗？').then((res) => {
+							_this.adminLoading = true;
+							let submitData = [];
+							// 给下机的订单补上结束时间
+							let obj = {};
+							obj["dicID"] = 7831;
+							obj["StartStopRecordID"] = _this.rightForm[0].StartRecordID;
+							obj["EndDate"] = newFormatDate.formatTodayDateDay();
+							submitData.push(obj);
+							// 如何刚好是停机的直接也给停机记录补上结束时间
+							if (_this.rightForm[0].ProductionStatus == 28) {
+								let obj2 = {};
+								obj2["dicID"] = 7831;
+								obj2["StartStopRecordID"] = _this.rightForm[0].StopRecordID;
+								obj2["EndDate"] = newFormatDate.formatTodayDateDay();
+								submitData.push(obj2);
+							}
+							// 正常保存状态
+							let obj3 = JSON.parse(JSON.stringify(_this.rightForm[0]));
+							obj3.ProductionStatus = 25;
+							obj3["OutfitID"] = '';
+							submitData.push(obj3);
+
+							// 机台可使用
+							submitData.push({
+								OrganizeID: _this.rightForm[0].OutfitID,
+								dicID: 36,
+								OutfitStatus: 0
+							});
+
+							_this.generalSaveData(submitData, 0);
+
+						}).catch(() => {
+
+						})
+					}
+				},
+				// 停机
+				parseOutfit() {
+					if (Object.keys(this.rightForm[0]).length == 0) {
+						this.$message.error("请单击选择需要停机的订单！");
+					} else if (this.rightForm[0].ProductionStatus != 22) { // 生产中才可停机
+						this.$message.error("该订单不符合停机条件！");
+					} else {
+						this.$confirm('确认是否停机吗？').then((res) => {
+							_this.adminLoading = true;
+							let submitData = [];
+							// 添加一笔停机记录
+							let obj = JSON.parse(JSON.stringify(_this.rightForm[0]));
+							obj["dicID"] = 7831;
+							obj["StartStopType"] = 2;
+							obj["StartDate"] = newFormatDate.formatTodayDateDay();
+							obj["Remark2"] = '订单暂停';
+							submitData.push(obj);
+
+							// 机台被暂停
+							submitData.push({
+								OrganizeID: _this.rightForm[0].OutfitID,
+								dicID: 36,
+								OutfitStatus: 1
+							});
+
+							let obj3 = JSON.parse(JSON.stringify(_this.rightForm[0]));
+							obj3.ProductionStatus = 28;
+							obj3["dicID"] = 7896;
+							submitData.push(obj3);
+							_this.generalSaveData(submitData, 0);
+
+						}).catch(() => {
+
+						})
+					}
+				},
+				// 预约开机
+				appointmentStart() {
+					this.ruleForm_0.StartDate = '';
+					if (this.home_tag_1 == 12) {
+						if (this.selectionData[12].length == 0) {
+							this.$message.error("请选择需要预约的数据！");
+						} else {
+							let flag = 0;
+							let newData = this.selectionData[12].filter(a => a.ParentID == -1);
+							let newData_no = [];
+							newData_no = newData.filter(a => _this.appointmentData_3.some(b => b.MachineMouldID == a
+								.MachineMouldID));
+							if (newData_no.length != 0) {
+								_this.$message.error("你选择预约的模具存在正在其他机台使用或被预约过，请检查一下！");
+								return
+							}
+
+							newData.some(a => {
+								if (!a.LineID || Object.values(a.LineID).length == 0) {
+									flag = 1;
+									return true
+								}
+							})
+							if (flag == 0) {
+								this.appointmentTag = 0;
+								this.dialog_1 = true;
+							} else {
+								this.$message.error("含有未选择机台！")
+							}
+						}
+					} else if (this.home_tag_1 == 17) {
+						// --有用暂停中是否要预约开机
+						if (this.selectionData[17].length == 0) {
+							this.$message.error("请选择需要预约的数据！");
+						} else {
+							let flag = 0;
+							let newData = this.selectionData[17].filter(a => a.ParentID == -1);
+							if (flag == 0) {
+								this.ruleForm_0.StartDate = '';
+								this.dialog_1 = true;
+							} else {
+								this.$message.error("已预约过该单！")
+							}
+						}
+					}
+				},
+				// 预约停机
+				appointmentEnd() {
+					if (this.selectionData[14].length == 0) {
+						this.$message.error("请选择需要预约的数据！");
+					} else {
+						this.ruleForm_1.EndDate = '';
+						this.dialog_end = true;
+						this.appointmentTag_2 = 0;
+						// let flag = 0;
+						// let newData = this.selectionData[0].filter(a => a.ParentID == -1);
+						// newData.some(b => {
+						//     if (b.IsAppointment) {
+						//         flag = 1;
+						//         return true
+						//     }
+						// })
+						// if (flag == 0) {
+						//     this.ruleForm_1.EndDate = '';
+						//     this.dialog_end = true;
+						//     this.appointmentTag_2 = 0;
+						// } else {
+						//     this.$message.error("含有已预约的单！")
+						// }
+					}
+				},
+				// 批量停机
+				moreParseOutfit_1() {
+					this.ruleForm.MoldMergeBatchIDs = []
+					this.dialog_start = true;
+				},
+				// 设备总览的停机
+				parseOutfit_1() {
+					if (Object.keys(this.rightForm[1]).length == 0) {
+						this.$message.error("请单击选择需要停机的机台！");
+					} else if (this.rightForm[1].ProductionStatus != 22) { // 生产中才可停机
+						this.$message.error("该订单不符合停机条件！");
+					} else {
+						this.$confirm('确认是否停机吗？').then((res) => {
+							_this.adminLoading = true;
+							let submitData = [];
+							// 添加一笔停机记录 可存在多笔订单
+							// let searchForm = { OutfitID: _this.rightForm[1].OutfitID, dicID: 98, ProductionStatus: _this.rightForm[1].ProductionStatus };
+							let OrderBOMIDs = _this.rightForm[1].OrderBOMIDs.split(',');
+							// 先找出多个单的数据
+							// axiosPostRequst(`/APSAPI/APSData`, searchForm)
+							//     .then(function (res) {
+							//         const { result, data, count, msg } = res;
+							//         if (result) {
+							//             if (data.length != 0) {
+							//                 let submitData = [];
+							//                 OrderBOMIDs.forEach(x => {
+							//                     submitData.push({ OrderBOMID: x, dicID: 98, ProductionStatus: 28, JudgeTag1: -1 })
+							//                 })
+							//                 data.forEach(y => {
+							//                     let obj = JSON.parse(JSON.stringify(y));
+							//                     obj["dicID"] = 7831;
+							//                     obj["StartStopType"] = 2;
+							//                     obj["StartDate"] = newFormatDate.formatTodayDateDay();
+							//                     obj["Remark2"] = '订单暂停';
+							//                     submitData.push(obj);
+							//                 })
+							//                 // 给合并单异常状态
+							//                 let obj4 = {};
+							//                 obj4["dicID"] = 7892;
+							//                 obj4["JudgeTag"] = -1;
+							//                 obj4["MoldMergeBatchID"] = _this.rightForm[1].MoldMergeBatchID;
+							//                 obj4["ProductionStatus"] = 28;
+							//                 submitData.push(obj4);
+							//                 _this.generalSaveData(submitData, 1);
+							//                 _this.targetTag_1 = -1;
+							//                 _this.rightForm[1] = null;
+							//                 _this.submitForm[1].AbnormalReason = null;
+							//                 _this.$set(_this.submitForm[1], 'AbnormalReason', '');
+							//             }
+							//         } else {
+							//             _this.$message({
+							//                 message: msg,
+							//                 type: "error",
+							//                 dangerouslyUseHTMLString: true,
+							//             });
+							//         }
+							//     })
+							OrderBOMIDs.forEach(x => {
+								submitData.push({
+									OrderBOMID: x,
+									dicID: 98,
+									ProductionStatus: 28,
+									JudgeTag1: -1
+								})
+							})
+							let obj = {};
+							obj["dicID"] = 7831;
+							obj["StartStopType"] = 2;
+							obj["BatchNo"] = _this.rightForm[1].BatchNo;
+							obj["OutfitID"] = _this.rightForm[1].OutfitID;
+							obj["MaterialID"] = _this.rightForm[1].MaterialID;
+							obj["StartDate"] = newFormatDate.formatTodayDateDay();
+							obj["Remark2"] = '订单暂停';
+							submitData.push(obj);
+							// 给合并单异常状态
+							let obj4 = {};
+							obj4["dicID"] = 7892;
+							obj4["JudgeTag"] = -1;
+							obj4["MoldMergeBatchID"] = _this.rightForm[1].MoldMergeBatchID;
+							obj4["ProductionStatus"] = 28;
+							submitData.push(obj4);
+
+							_this.targetTag_1 = -1;
+							_this.submitForm[1].AbnormalReason = null;
+							_this.$set(_this.submitForm[1], 'AbnormalReason', '');
+
+							// 机台被暂停
+							let newSubmitData = [];
+							let obj5 = {
+								OrganizeID: _this.rightForm[1].OutfitID,
+								dicID: 36,
+								OutfitStatus: 1
+							}
+							newSubmitData.push(obj5);
+							let obj3 = JSON.parse(JSON.stringify(_this.rightForm[1]));
+							obj3["ProductionStatus"] = 28;
+							obj3["dicID"] = 7896;
+							newSubmitData.push(obj3);
+							newSubmitData = newSubmitData.concat(submitData);
+							_this.generalSaveData(newSubmitData, 1);
+
+						}).catch(() => {
+
+						})
+					}
+				},
+				// 通用保存数据
+				generalSaveData(newData, index) {
+					axiosPostRequst(`/APSAPI/SaveData`, newData)
+						.then(function(res) {
+							const {
+								result,
+								data,
+								count,
+								msg
+							} = res;
+							if (result) {
+								_this.getAppoinmentData('查询', index);
+								_this.adminLoading = false;
+								_this.dataSearch(index);
+								if (index == 1) {
+									_this.targetTag_1 = -1;
+									_this.rightForm[1] = {};
+									_this.$set(_this.submitForm[1], 'AbnormalReason', null);
+								}
+								_this.getLineData();
+								_this.$message({
+									message: msg,
+									type: "success",
+									dangerouslyUseHTMLString: true,
+								});
+							} else {
+								_this.adminLoading = false;
+								_this.$message({
+									message: msg,
+									type: "error",
+									dangerouslyUseHTMLString: true,
+								});
+							}
+						})
+				},
+				/////////////////////表格样式
+				rowStyle({
+					row,
+					column
+				}) {
+					let className = '';
+					if (row.IsDifficent == 1) {
+						className += 'orangeBg'
+					}
+					return className
+				},
+				cellStyle({
+					row,
+					column
+				}) {
+					if (row.ImportName == '加急' && column.property == 'ImportName') {
+						return {
+							backgroundColor: 'red',
+							color: '#fff'
+						}
+					}
+					if (row.IsDifficent == 1 && column.property == 'IsDifficentName') {
+						return {
+							fontWeight: 'bold',
+							color: 'red'
+						}
+					}
+					if (row.ProductionStatus == 21 && column.property == 'ProductionStatusName') {
+						return {
+							backgroundColor: '#929395',
+							color: '#fff'
+						}
+					} else if (row.ProductionStatus == 22 && column.property == 'ProductionStatusName') {
+						return {
+							backgroundColor: '#3D8AFF',
+							color: '#fff'
+						}
+					} else if (row.ProductionStatus == 28 && column.property == 'ProductionStatusName') {
+						return {
+							backgroundColor: '#FEBA34',
+							color: '#fff'
+						}
+					} else if (row.ProductionStatus == 26 && column.property == 'ProductionStatusName') {
+						return {
+							backgroundColor: '#ACBBD2',
+							color: '#fff'
+						}
+					} else if (row.ProductionStatus == 25 && column.property == 'ProductionStatusName') {
+						return {
+							backgroundColor: '#23C191',
+							color: '#fff'
+						}
+					} else if (row.ProductionStatus == 89 && column.property == 'ProductionStatusName') {
+						return {
+							backgroundColor: '#FF7A55',
+							color: '#fff'
+						}
+					}
+				},
+				///////////////////////设备模块
+				// 开机选单
+				setOrder() {
+					this.activeName = 'left_0';
+				},
+				// 更换订单
+				changeOrder() {
+					if (Object.keys(this.rightForm[1]).length == 0) {
+						this.$message.error("请单击选中需要更换订单的机台！");
+					} else {
+						this.dialogOrder = true;
+						this.formSearchs[10].datas["ProductionStatus"] = 21;
+						this.dataSearch(10);
+					}
+				},
+				// 异常开始最新--机台解除占用，订单也重新回到待生产状态，如果原因为模具维修，则需要进入模具维修表
+				AbnormalStartNew() {
+					if (Object.keys(this.rightForm[1]).length == 0) {
+						this.$message.error("请单击异常的机台！");
+					} else {
+						if (_this.rightForm[1].ProductionStatus != 22) {
+							this.$message.error("没有正在生产的产品！")
+						} else if (!_this.submitForm[1].AbnormalReason) {
+							this.$message.error("请选择异常原因！")
+						} else {
+							this.$confirm('确认机台异常吗？').then(() => {
+								_this.adminLoading = true;
+								// 获取OrderBOMID去添加异常记录
+								let submitData = [];
+								let OrderBOMIDs = _this.rightForm[1].OrderBOMIDs.split(',');
+								let searchForm = {
+									OutfitID: _this.rightForm[1].OutfitID,
+									dicID: 98,
+									ProductionStatus: _this.rightForm[1].ProductionStatus
+								};
+								submitData.push({
+									OrganizeID: _this.rightForm[1].OutfitID,
+									dicID: 36,
+									OutfitStatus: 0
+								}); //机台解除占用
+								OrderBOMIDs.forEach(x => {
+									submitData.push({
+										OrderBOMID: x,
+										dicID: 98,
+										ProductionStatus: 21,
+										OutfitID: null,
+										JudgeTag1: -1
+									})
+								})
+
+								let obj = {};
+								obj["dicID"] = 7831;
+								obj["StartStopType"] = 2;
+								obj["BatchNo"] = _this.submitForm[1].BatchNo;
+								obj["MaterialID"] = _this.submitForm[1].MaterialID;
+								obj["OutfitID"] = _this.submitForm[1].OutfitID;
+								obj["StartDate"] = newFormatDate.formatTodayDateDay();
+								obj["Remark1"] = JSON.parse(JSON.stringify(_this.submitForm[1]
+									.AbnormalReason));
+								obj["Remark2"] = '机台异常';
+								submitData.push(obj);
+
+
+								// 给合并单解除异常状态
+								let obj4 = {};
+								obj4["dicID"] = 7892;
+								obj4["JudgeTag"] = -1;
+								obj4["MoldMergeBatchID"] = _this.rightForm[1].MoldMergeBatchID;
+								obj4["ProductionStatus"] = 21;
+								obj4["LineID"] = null;
+								submitData.push(obj4);
+
+								let StartRecordIDs = _this.rightForm[1].StartRecordIDs.split(',');
+								if (StartRecordIDs.length != 0) {
+									StartRecordIDs.forEach(f => {
+										let obj5 = {};
+										obj5["dicID"] = 7831;
+										obj5["StartStopRecordID"] = f;
+										obj5["EndDate"] = newFormatDate.formatTodayDateDay();
+										submitData.push(obj5);
+									})
+								}
+
+								if (this.submitForm[1].AbnormalReason == '模具维修') {
+									// 新增一笔模具维修记录，且这个模具的状态变为不可用
+									let obj7 = {};
+									obj7["dicID"] = 7969;
+									obj7["OperationStatus"] = 2;
+									obj7["MachineMouldID"] = _this.rightForm[1].MachineMouldID;
+									submitData.push(obj7);
+									let obj8 = {};
+									obj8["dicID"] = 108;
+									obj8["Status"] = 0;
+									obj8["Remark2"] = '模具维修';
+									obj8["MachineMouldID"] = _this.rightForm[1].MachineMouldID;
+									submitData.push(obj8);
+								}
+								_this.generalSaveData(submitData, 1);
+							}).catch(() => {
+
+							})
+						}
+					}
+				},
+				// 异常开始
+				AbnormalStart() {
+					if (Object.keys(this.rightForm[1]).length == 0) {
+						this.$message.error("请单击异常的机台！");
+					} else {
+						if (_this.rightForm[1].ProductionStatus != 22) {
+							this.$message.error("没有正在生产的产品！")
+						} else if (!_this.submitForm[1].AbnormalReason) {
+							this.$message.error("请选择异常原因！")
+						} else {
+							this.$confirm('确认机台异常吗？').then(() => {
+								_this.adminLoading = true;
+								// 获取OrderBOMID去添加异常记录
+								let submitData = [];
+								let OrderBOMIDs = _this.rightForm[1].OrderBOMIDs.split(',');
+								let searchForm = {
+									OutfitID: _this.rightForm[1].OutfitID,
+									dicID: 98,
+									ProductionStatus: _this.rightForm[1].ProductionStatus
+								};
+								submitData.push({
+									OrganizeID: _this.rightForm[1].OutfitID,
+									dicID: 36,
+									OutfitStatus: 1
+								});
+								OrderBOMIDs.forEach(x => {
+									submitData.push({
+										OrderBOMID: x,
+										dicID: 98,
+										ProductionStatus: 28,
+										JudgeTag1: -1
+									})
+								})
+								axiosPostRequst(`/APSAPI/APSData`, searchForm)
+									.then(function(res) {
+										const {
+											result,
+											data,
+											count,
+											msg
+										} = res;
+										if (result) {
+											if (data.length != 0) {
+												data.forEach(y => {
+													let obj = JSON.parse(JSON.stringify(y));
+													obj["dicID"] = 7831;
+													obj["StartStopType"] = 2;
+													obj["StartDate"] = newFormatDate
+														.formatTodayDateDay();
+													obj["Remark1"] = JSON.parse(JSON.stringify(
+														_this.submitForm[1].AbnormalReason
+													));
+													obj["Remark2"] = '机台异常';
+													submitData.push(obj);
+												})
+												// 给合并单异常状态
+												let obj4 = {};
+												obj4["dicID"] = 7892;
+												obj4["JudgeTag"] = -1;
+												obj4["MoldMergeBatchID"] = _this.rightForm[1]
+													.MoldMergeBatchID;
+												obj4["ProductionStatus"] = 28;
+												submitData.push(obj4);
+												_this.generalSaveData(submitData, 1);
+											}
+										} else {
+											_this.$message({
+												message: msg,
+												type: "error",
+												dangerouslyUseHTMLString: true,
+											});
+										}
+									})
+							}).catch(() => {
+
+							})
+						}
+					}
+				},
+				// 异常结束
+				AbnormalEnd() {
+					if (Object.keys(this.rightForm[1]).length == 0) {
+						this.$message.error("请单击异常的机台！");
+					} else {
+						if (_this.rightForm[1].ProductionStatus != 28) {
+							this.$message.error("该机台无异常，红色为异常的机台，请注意！")
+						} else {
+							this.$confirm('确认结束机台异常吗？').then(() => {
+								_this.adminLoading = true;
+								// 获取OrderBOMID去添加异常记录
+								let submitData = [];
+								let OrderBOMID = _this.rightForm[1].OrderBOMIDs.split(',');
+								let StartStopRecordID = _this.rightForm[1].StartStopRecordIDs.split(',');
+								submitData.push({
+									OrganizeID: _this.rightForm[1].OutfitID,
+									dicID: 36,
+									OutfitStatus: 2
+								});
+								OrderBOMID.forEach(x => {
+									submitData.push({
+										OrderBOMID: x,
+										dicID: 98,
+										ProductionStatus: 22,
+										JudgeTag1: -1
+									})
+								})
+								StartStopRecordID.forEach(y => {
+									let obj = {};
+									obj["dicID"] = 7831;
+									obj["StartStopRecordID"] = y;
+									obj["EndDate"] = newFormatDate.formatTodayDateDay();
+									submitData.push(obj);
+								})
+
+								// 给合并单结束异常状态
+								let obj4 = {};
+								obj4["dicID"] = 7892;
+								obj4["JudgeTag"] = -1;
+								obj4["MoldMergeBatchID"] = _this.rightForm[1].MoldMergeBatchID;
+								obj4["ProductionStatus"] = 22;
+								submitData.push(obj4);
+
+								_this.generalSaveData(submitData, 1);
+								_this.$set(_this.submitForm[1], 'AbnormalReason', '');
+							}).catch(() => {
+
+							})
+						}
+					}
+				},
+				// 在设备总览中下机
+				downOutfit_1() {
+
+				},
+				// 生产完成
+				productionComplete() {
+					if (Object.keys(this.rightForm[1]).length == 0) {
+						this.$message.error("请单击已完成的机台！");
+					} else {
+						if (_this.rightForm[1].ProductionStatus != 22 && _this.rightForm[1].ProductionStatus != 28) {
+							this.$message.error("仅生产中或暂停的机台可以生产完成！")
+						} else {
+							this.$confirm('确定这台机的生产完成吗？').then(() => {
+								_this.adminLoading = true;
+								let submitData = [];
+								// 机台可使用
+								submitData.push({
+									OrganizeID: _this.rightForm[1].OutfitID,
+									dicID: 36,
+									OutfitStatus: 0
+								});
+								// 可能出现多个订单
+								if (_this.rightForm[1].StartRecordIDs) {
+									let StartRecordIDs = _this.rightForm[1].StartRecordIDs.split(',');
+									if (StartRecordIDs.length != 0) {
+										StartRecordIDs.forEach(x => {
+											if (x) {
+												// 给有上机记录的的订单补上结束时间
+												let obj = {};
+												obj["dicID"] = 7831;
+												obj["StartStopRecordID"] = x;
+												obj["EndDate"] = newFormatDate.formatTodayDateDay();
+												submitData.push(obj);
+											}
+										})
+									}
+								}
+								// 如何刚好是停机的直接也给停机记录补上结束时间
+								if (_this.rightForm[1].ProductionStatus == 28) {
+									// 可能出现多个订单
+									if (_this.rightForm[1].StartStopRecordIDs) {
+										let StartStopRecordIDs = _this.rightForm[1].StartStopRecordIDs.split(
+											',');
+										StartStopRecordIDs.forEach(o => {
+											if (o) {
+												let obj2 = {};
+												obj2["dicID"] = 7831;
+												obj2["StartStopRecordID"] = o;
+												obj2["EndDate"] = newFormatDate.formatTodayDateDay();
+												submitData.push(obj2);
+											}
+										})
+									}
+								}
+
+								// 正常保存状态 多个订单一起保存
+								if (_this.rightForm[1].OrderBOMIDs) {
+									let OrderBOMIDs = _this.rightForm[1].OrderBOMIDs.split(',');
+									if (OrderBOMIDs.length != 0) {
+										OrderBOMIDs.forEach(p => {
+											if (p) {
+												let obj3 = {};
+												obj3.ProductionStatus = 25;
+												obj3["OrderBOMID"] = p;
+												obj3["BOMEndDate"] = newFormatDate
+													.formatTodayDateDay();
+												// obj3["OutfitID"] = '';
+												obj3["dicID"] = 98;
+												obj3["JudgeTag1"] = -1;
+												submitData.push(obj3);
+											}
+										})
+									}
+								}
+
+								// 给合并单补上完成状态
+								let obj4 = {};
+								obj4["dicID"] = 7892;
+								obj4["JudgeTag"] = 3;
+								obj4["MoldMergeBatchID"] = _this.rightForm[1].MoldMergeBatchID;
+								obj4["ProductionStatus"] = 25;
+								submitData.push(obj4);
+								_this.generalSaveData(submitData, 1);
+							}).catch(() => {
+
+							})
+						}
+					}
+				},
+				// 异常结束
+				AbnormalEnd2() {
+					if (Object.keys(this.rightForm[4]).length == 0) {
+						this.$message.error("请单击异常的机台！");
+					} else {
+						this.$confirm('确认结束机台异常吗？').then(() => {
+							// 获取OrderBOMID去添加异常记录
+							let submitData = [];
+							_this.adminLoading = true;
+							let OrderBOMID = _this.rightForm[4].OrderBOMIDs.split(',');
+							let StartStopRecordID = _this.rightForm[4].StartStopRecordIDs.split(',');
+							submitData.push({
+								OrganizeID: _this.rightForm[4].OutfitID,
+								dicID: 36,
+								OutfitStatus: 2
+							});
+							OrderBOMID.forEach(x => {
+								submitData.push({
+									OrderBOMID: x,
+									dicID: 98,
+									ProductionStatus: 22,
+									JudgeTag1: -1
+								})
+							})
+							StartStopRecordID.forEach(y => {
+								let obj = {};
+								obj["dicID"] = 7831;
+								obj["StartStopRecordID"] = y;
+								obj["EndDate"] = newFormatDate.formatTodayDateDay();
+								submitData.push(obj);
+							})
+							// 给合并单结束异常状态
+							let obj4 = {};
+							obj4["dicID"] = 7892;
+							obj4["JudgeTag"] = -1;
+							obj4["MoldMergeBatchID"] = _this.rightForm[4].MoldMergeBatchID;
+							obj4["ProductionStatus"] = 22;
+							submitData.push(obj4);
+							_this.generalSaveData(submitData, 4);
+						}).catch(() => {})
+					}
+				},
+				// 确定更换单
+				sureChangeOrder() {
+					if (this.rightForm[1].ProductionStatus == 28) {
+						this.$message.error("该机台异常中！")
+					} else if (this.rightForm[1].ProductionStatus != 22) {
+						this.$message.error("没有单可更换！")
+					} else {
+						this.$confirm('确认要更换订单吗？').then(() => {
+							_this.adminLoading = true;
+							let OrderBOMID = _this.rightForm[1].OrderBOMIDs.split(',');
+							let StartStopRecordID = _this.rightForm[1].StartStopRecordIDs.split(',');
+							let submitData = [];
+							submitData.push({
+								OrganizeID: _this.rightForm[4].OutfitID,
+								dicID: 36,
+								OutfitStatus: 0
+							});
+							// 1.更改原先单的状态，下机的数据添加结束时间
+							OrderBOMID.forEach(x => {
+								submitData.push({
+									OrderBOMID: x,
+									dicID: 98,
+									ProductionStatus: 21,
+									OutfitID: null,
+									JudgeTag1: -1
+								})
+							})
+							StartStopRecordID.forEach(y => {
+								let obj = {};
+								obj["dicID"] = 7831;
+								obj["StartStopRecordID"] = y;
+								obj["EndDate"] = newFormatDate.formatTodayDateDay();
+								submitData.push(obj);
+							})
+							// 2.更改新单的
+							let newData = JSON.parse(JSON.stringify(this.selectionData[10]));
+							newData[0]["OutfitID"] = _this.rightForm[1].OutfitID;
+							newData[0]["ProductionStatus"] = 22;
+							submitData = submitData.concat(newData);
+							// 3.新加入一笔上机记录
+							let obj = JSON.parse(JSON.stringify(_this.rightForm[0]));
+							obj["dicID"] = 7831;
+							obj["StartStopType"] = 1;
+							obj["OutfitID"] = _this.rightForm[1].OutfitID;
+							obj["StartDate"] = newFormatDate.formatTodayDateDay();
+							submitData.push(obj);
+							_this.generalSaveData(submitData, 1);
+							_this.dialogOrder = false;
+						}).catch(() => {})
+					}
+				},
+				// 添加异常原因
+				setAbnormal(val) {
+					this.$set(this.submitForm[1], 'AbnormalReason', val);
+				},
+				// 异常直接开始
+				startup(row, val, prop, index) {
+					this.$confirm('确认是否开始吗？').then((res) => {
+						let submitData = [];
+						_this.adminLoading = true;
+						let StartStopRecordIDs = row.StartStopRecordIDs.split(',');
+						// 给异常停机补上结束时间
+						StartStopRecordIDs.forEach(c => {
+							let obj2 = {};
+							obj2["dicID"] = 7831;
+							obj2["StartStopRecordID"] = c;
+							obj2["EndDate"] = newFormatDate.formatTodayDateDay();
+							submitData.push(obj2);
+						})
+
+						// 给开机记录补上结束时间
+						let StartRecordIDs = row.StartRecordIDs.split(',');
+						StartRecordIDs.forEach(d => {
+							let obj3 = {};
+							obj3["dicID"] = 7831;
+							obj3["StartStopRecordID"] = d;
+							obj3["EndDate"] = newFormatDate.formatTodayDateDay();
+							submitData.push(obj3);
+						})
+
+						// 添加一笔给开机补上结束重新开机记录
+						let obj1 = JSON.parse(JSON.stringify(row));
+						obj1["JudgeTag"] = 4;
+						obj1["ProductionStatus"] = 22;
+						obj1["dicID"] = 7892;
+						submitData.push(obj1);
+
+						// 给机台添加正常的标志
+						let obj2 = {};
+						obj2["OrganizeID"] = row.LineID;
+						obj2["dicID"] = 36;
+						obj2["OutfitStatus"] = 2;
+						submitData.push(obj2);
+						_this.generalSaveData(submitData, 17);
+
+					}).catch(() => {
+
+					})
+				},
+				// 批量停机
+				sureAoreParseOutfit_1() {
+					if (this.ruleForm.MoldMergeBatchIDs.length == 0) {
+						this.$message.error("请选择需要停机的单！")
+						return
+					}
+					this.$confirm('确认是否批量暂停停机吗？').then((res) => {
+						_this.adminLoading = true;
+						let submitData = [];
+						// 机台被暂停
+						let newSubmitData = [];
+						let OutfitIDs = _this.ruleForm.MoldMergeBatchIDs.map(a => a.LineID);
+						_this.dialog_start = false;
+						// 添加一笔停机记录 可存在多笔订单
+						let searchForm = {
+							OutfitID: OutfitIDs,
+							dicID: 98,
+							ProductionStatus: 22
+						};
+						// 先找出多个单的数据
+						axiosPostRequst(`/APSAPI/APSData`, searchForm)
+							.then(function(res) {
+								const {
+									result,
+									data,
+									count,
+									msg
+								} = res;
+								if (result) {
+									if (data.length != 0) {
+										data.forEach(x => {
+											submitData.push({
+												OrderBOMID: x.OrderBOMID,
+												dicID: 98,
+												ProductionStatus: 28,
+												JudgeTag1: -1
+											})
+										})
+										// data.forEach(y => {
+										//     let obj = JSON.parse(JSON.stringify(y));
+										//     obj["dicID"] = 7831;
+										//     obj["StartStopType"] = 2;
+										//     obj["StartDate"] = newFormatDate.formatTodayDateDay();
+										//     obj["Remark2"] = '订单暂停';
+										//     submitData.push(obj);
+										// })
+
+									}
+									OutfitIDs.forEach(a => {
+										let newIndex = _this.appointmentData_2.findIndex(b => b
+											.LineID == a);
+										let obj = {};
+										obj["dicID"] = 7831;
+										obj["StartStopType"] = 2;
+										obj["StartDate"] = newFormatDate.formatTodayDateDay();
+										obj["Remark2"] = '订单暂停';
+										obj["BatchNo"] = _this.appointmentData_2[newIndex]
+											.BatchNo;
+										obj["MaterialID"] = _this.appointmentData_2[newIndex]
+											.MaterialID;
+										obj["OutfitID"] = _this.appointmentData_2[newIndex]
+											.LineID;
+										submitData.push(obj);
+									})
+
+									_this.ruleForm.MoldMergeBatchIDs.forEach(r => {
+										// 给合并单异常状态
+										let obj4 = {};
+										obj4["dicID"] = 7892;
+										obj4["JudgeTag"] = -1;
+										obj4["MoldMergeBatchID"] = r.MoldMergeBatchID;
+										obj4["ProductionStatus"] = 28;
+										submitData.push(obj4);
+										newSubmitData.push({
+											OrganizeID: r.LineID,
+											dicID: 36,
+											OutfitStatus: 1
+										});
+
+										let obj3 = JSON.parse(JSON.stringify(r));
+										obj3.ProductionStatus = 28;
+										obj3["dicID"] = 7896;
+										newSubmitData.push(obj3);
+									})
+
+									_this.generalSaveData(submitData, 1);
+									_this.generalSaveData(newSubmitData, 0);
+
+
+								} else {
+									_this.$message({
+										message: msg,
+										type: "error",
+										dangerouslyUseHTMLString: true,
+									});
+								}
+							})
+					})
+				},
+
+				////////新增的功能
+				changeStatus(item, index) {
+					this.formSearchs[0].datas["ProductionStatus_2"] = item.value;
+					this.labelStatus1 = index;
+					this.dataSearch(0);
+				},
+				changeStatus2(item, index) {
+					this.labelStatus2 = index;
+					// this.formSearchs[0].ProductionStatus_2 = item.value;
+					this.dataSearch(12);
+				},
+				changeStatus3(item, index) {
+					this.labelStatus3 = index;
+					this.formSearchs[14].datas["IsDifficent"] = '';
+					this.formSearchs[14].datas["IsOutPart"] = '';
+					if (index == 1) {
+						this.formSearchs[14].datas["IsDifficent"] = 1;
+					} else if (index == 2) {
+						this.formSearchs[14].datas["IsDifficent"] = 0;
+					} else if (index == 3) {
+						this.formSearchs[14].datas["IsOutPart"] = 1;
+					}
+					this.dataSearch(14);
+				},
+				// 直接待生产行内上机 新改的有效方法
+				newupoutfit(row, val, prop, index, remarkTb) {
+					let newData = this.appointmentData_3.filter(a => a.MachineMouldID == row.MachineMouldID);
+					if (newData.length != 0) {
+						this.$message.error("该模具已被其他机台使用！")
+						return
+					}
+					if (!row.LineIDTemporary) {
+						this.$message.error("请选择要上机的机台！");
+					} else {
+						this.$confirm('确认是否上机吗？').then((res) => {
+							let submitData = [];
+							_this.adminLoading = true;
+							let obj1 = JSON.parse(JSON.stringify(row));
+							if (row.ProductionStatus == 21) {
+								// 保存合并后的机台数据
+								obj1["LineID"] = row.LineIDTemporary;
+								obj1["JudgeTag"] = 1;
+							}
+							obj1["ProductionStatus"] = 22;
+							obj1["dicID"] = 7892;
+							submitData.push(obj1);
+							// 机台显示被占用
+							submitData.push({
+								OrganizeID: row.LineIDTemporary,
+								dicID: 36,
+								OutfitStatus: 2
+							});
+							_this.generalSaveData(submitData, remarkTb);
+						}).catch(() => {
+
+						})
+					}
+				},
+				// 取消预约
+				deleteappointment(row, val, prop, index, remarkTb) {
+					this.$confirm('确认取消预约吗？').then((res) => {
+						let newData = [];
+						let obj2 = {};
+						obj2["ElementDeleteFlag"] = 1;
+						obj2["dicID"] = 7939;
+						obj2["MoldMergeBatchID"] = row.MoldMergeBatchTemporaryID;
+						newData.push(obj2);
+						let obj = {};
+						obj["dicID"] = 36;
+						obj["OrganizeID"] = row.AppointLineID;
+						obj["OutfitStatus"] = 0;
+						newData.push(obj);
+						_this.generalSaveData(newData, remarkTb);
+					}).catch(() => {})
+				},
+				// 更改开机预约
+				changeAppointment() {
+					if (this.selectionData[13].length == 0) {
+						this.$message.error("请选择需要更改预约的数据！");
+					} else {
+						this.appointmentTag = 1;
+						this.dialog_1 = true;
+					}
+				},
+				// 更改停机预约
+				changeAppointment_2() {
+					if (this.selectionData[15].length == 0) {
+						this.$message.error("请选择需要更改预约的数据！");
+					} else {
+						this.appointmentTag_2 = 1;
+						this.dialog_end = true;
+					}
+
+				},
+				//预约开机开始
+				sureAppointmentStart() {
+					if (!this.ruleForm_0.StartDate) {
+						this.$message.error("预约时间必填！")
+						return
+					}
+					this.$confirm('确认预约这个时间段吗？').then((res) => {
+						let submitData = [];
+						if (_this.appointmentTag == 0) {
+							if (_this.home_tag_1 == 12) {
+								let newData = _this.selectionData[12].filter(a => a.ParentID == -1);
+								newData.some(a => {
+									let obj = JSON.parse(JSON.stringify(a));
+									obj["LineID"] = obj.LineIDTemporary;
+									obj["dicID"] = 7939;
+									obj["Type"] = 1; // 上机标志
+									obj["Status"] = 1; // 
+									obj["MoldMergeBatchID"] = '';
+									obj["StartDate"] = _this.ruleForm_0.StartDate;
+									submitData.push(obj);
+									// 给机台添加预约状态
+									submitData.push({
+										dicID: 36,
+										OrganizeID: a.LineIDTemporary,
+										OutfitStatus: 3
+									});
+								})
+							} else if (_this.home_tag_1 == 17) {
+								// --停机状态预约
+								let newData = _this.selectionData[17].filter(a => a.ParentID == -1);
+								newData.some(a => {
+									let obj = JSON.parse(JSON.stringify(a));
+									obj["dicID"] = 7939;
+									obj["Type"] = 1; // 上机标志
+									obj["Status"] = 1; // 
+									obj["MoldMergeBatchID"] = '';
+									obj["StartDate"] = _this.ruleForm_0.StartDate;
+									submitData.push(obj);
+									// 给机台添加预约状态
+									submitData.push({
+										dicID: 36,
+										OrganizeID: a.LineID,
+										OutfitStatus: 3
+									});
+								})
+							}
+
+							if (submitData.length != 0) {
+								_this.dialog_1 = false;
+								_this.generalSaveData(submitData, _this.home_tag_1);
+							} else {
+								this.$message.error("暂无可提交的数据！");
+							}
+						} else {
+							// 更改停机预约时间
+							let newData = _this.selectionData[13].filter(a => a.ParentID == -1);
+							newData.forEach(a => {
+								let obj = {};
+								obj["dicID"] = 7939;
+								obj["MoldMergeBatchID"] = a.MoldMergeBatchTemporaryID;
+								obj["StartDate"] = _this.ruleForm_0.StartDate;
+								submitData.push(obj);
+							})
+							if (submitData.length != 0) {
+								_this.generalSaveData(submitData, 13);
+								_this.dialog_1 = false;
+							} else {
+								_this.$message.error("暂无可提交的数据！");
+							}
+
+						}
+
+
+					})
+
+				},
+				// 预约停机开始
+				sureAppointmentEnd() {
+					if (!this.ruleForm_1.EndDate) {
+						this.$message.error("预约时间必填！")
+						return
+					}
+					this.$confirm('确认预约这个时间段吗？').then((res) => {
+						let submitData = [];
+						if (_this.appointmentTag_2 == 0) {
+							let newData = this.selectionData[14].filter(a => a.ParentID == -1);
+							newData.some(a => {
+								let obj = JSON.parse(JSON.stringify(a));
+								obj["dicID"] = 7939;
+								obj["LineID"] = a.LineID;
+								obj["ProductionStatus"] = a.ProductionStatus;
+								obj["LineID"] = a.LineID;
+								obj["Type"] = 2; // 停机标志
+								obj["MoldMergeBatchID"] = ''; // 停机标志
+								obj["EndDate"] = _this.ruleForm_1.EndDate;
+								delete obj.childrens;
+								submitData.push(obj);
+
+							})
+							if (submitData.length != 0) {
+								_this.generalSaveData(submitData, 14);
+								_this.dialog_end = false;
+							} else {
+								_this.$message.error("暂无可提交的数据！");
+							}
+						} else {
+							// 更改预约时间
+							let newData = _this.selectionData[15].filter(a => a.ParentID == -1);
+							newData.forEach(a => {
+								let obj = {};
+								obj["dicID"] = 7939;
+								obj["MoldMergeBatchID"] = a.MoldMergeBatchTemporaryID;
+								obj["EndDate"] = _this.ruleForm_1.EndDate;
+								submitData.push(obj);
+							})
+							if (submitData.length != 0) {
+								_this.generalSaveData(submitData, 15);
+								_this.dialog_end = false;
+							} else {
+								_this.$message.error("暂无可提交的数据！");
+							}
+						}
+
+					})
+				},
+				// 异常直接开始
+				startup(row, val, prop, index, remarkTb) {
+					this.$confirm('是否开始吗？').then((res) => {
+						let submitData = [];
+						_this.adminLoading = true;
+						let StartStopRecordIDs = row.StartStopRecordIDs.split(',');
+						// 给异常停机补上结束时间
+						StartStopRecordIDs.forEach(c => {
+							let obj2 = {};
+							obj2["dicID"] = 7831;
+							obj2["StartStopRecordID"] = c;
+							obj2["EndDate"] = newFormatDate.formatTodayDateDay();
+							submitData.push(obj2);
+						})
+
+						// 给开机记录补上结束时间
+						let StartRecordIDs = row.StartRecordIDs.split(',');
+						StartRecordIDs.forEach(d => {
+							let obj3 = {};
+							obj3["dicID"] = 7831;
+							obj3["StartStopRecordID"] = d;
+							obj3["EndDate"] = newFormatDate.formatTodayDateDay();
+							submitData.push(obj3);
+						})
+
+						// 添加一笔给开机补上结束重新开机记录
+						let obj1 = JSON.parse(JSON.stringify(row));
+						obj1["JudgeTag"] = 4;
+						obj1["ProductionStatus"] = 22;
+						obj1["dicID"] = 7892;
+						submitData.push(obj1);
+
+						// 给机台添加正常的标志
+						let obj2 = {};
+						obj2["OrganizeID"] = row.LineID;
+						obj2["dicID"] = 36;
+						obj2["OutfitStatus"] = 2;
+						submitData.push(obj2);
+						_this.generalSaveData(submitData, remarkTb);
+
+					}).catch(() => {
+
+					})
+				},
+				// 异常直接生产结束
+				startend(row, val, prop, index, remarkTb) {
+					this.$confirm('是否生产完成？').then((res) => {
+						let submitData = [];
+						let newData = row.children;
+						// 改变订单的状态
+						newData.forEach(a => {
+							let obj3 = {};
+							obj3.ProductionStatus = 25;
+							obj3["OrderBOMID"] = a;
+							// obj3["OutfitID"] = '';
+							obj3["dicID"] = 98;
+							obj3["BOMEndDate"] = newFormatDate.formatTodayDateDay();
+							obj3["JudgeTag1"] = -1;
+							submitData.push(obj3);
+						})
+						// 停机记录补上结束时间
+						let StartStopRecordIDs = row.StartStopRecordIDs.split(',');
+						StartStopRecordIDs.forEach(o => {
+							if (o) {
+								let obj2 = {};
+								obj2["dicID"] = 7831;
+								obj2["StartStopRecordID"] = o;
+								obj2["EndDate"] = newFormatDate.formatTodayDateDay();
+								submitData.push(obj2);
+							}
+						})
+						// 给合并单补上完成状态
+						let obj4 = {};
+						obj4["dicID"] = 7892;
+						obj4["JudgeTag"] = 3;
+						obj4["MoldMergeBatchID"] = row.MoldMergeBatchID;
+						obj4["ProductionStatus"] = 25;
+						submitData.push(obj4);
+						// 机台可使用
+						submitData.push({
+							OrganizeID: row.LineID,
+							dicID: 36,
+							OutfitStatus: 0
+						});
+
+						_this.generalSaveData(submitData, remarkTb);
+					}).catch(() => {
+
+					})
+				},
+				// 打开需要替换上机的弹框
+				openDialog_batchno() {
+					this.dialog_newBatch = true;
+					this.formSearchs[18].datas["MachineMouldID"] = this.rightForm[1].MachineMouldID;
+					this.formSearchs[18].datas["ProductionStatus"] = 21;
+					this.dataSearch(18);
+				},
+				// 打开需要追加上机的弹框
+				openDialog_batchno_2() {
+					this.dialog_newBatch_2 = true;
+					this.formSearchs[19].datas["MaterialID"] = this.rightForm[1].MaterialID;
+					this.formSearchs[19].datas["ProductionStatus"] = 21;
+					this.formSearchs[19].datas["IsNew"] = 1;
+					this.dataSearch(19);
+				},
+				// 新的上机，将旧的直接生产完成
+				// 新建批次按钮
+				addnewbatchno(row) {
+					this.$confirm('确定将上一个产品生产完成，当前的产品上机吗 ？').then((res) => {
+						let obj = {};
+						obj["dicID"] = 7892;
+						obj["LineID"] = _this.rightForm[1].OutfitID;
+						obj["MoldMergeBatchID"] = row.MoldMergeBatchID;
+						obj["ProductionStatus"] = 22;
+						obj["JudgeTag"] = 5;
+						obj["StartDate"] = newFormatDate.formatTodayDateDay();
+						// 能获取到这个的批次号，直接更新7892合并表的机台
+						let newData = [];
+						newData.push(obj);
+						_this.generalSaveData(newData, 1);
+						_this.dialog_newBatch = false;
+					})
+
+				},
+				// 弹框里追加数据
+				addnewbom(row) {
+					this.$confirm('确定追加吗？').then((res) => {
+						let obj = {
+							dicID: 98,
+							JudgeTag1: 2,
+							OrderBOMID: row.OrderBOMID,
+							OutfitID: this.rightForm[1].LineID,
+							BatchNo: this.rightForm[1].BatchNo,
+							ProductionStatus: 22,
+							BOMStartDate: newFormatDate.formatTodayDateDay()
+						}
+						let newData = [];
+						newData.push(obj);
+						_this.generalSaveData(newData, 1);
+						_this.dialog_newBatch_2 = false;
+					})
+				}
+			}
+		})
+		const _this = app;
+	</script>
+	<style>
+		.text_right {
+			text-align: right;
+			display: flex;
+			font-size: 1.8rem;
+			height: 3rem;
+			line-height: 3rem;
+		}
+
+		.vertical {
+			display: inline-block;
+			width: 0.071429rem;
+			height: 1em;
+			margin: 0 0.571429rem;
+			vertical-align: middle;
+			position: relative;
+			background: #000000;
+		}
+
+		.statusActive {
+			color: #409EFF;
+			border-bottom: 1px solid #409EFF;
+			font-weight: bold;
+		}
+	</style>

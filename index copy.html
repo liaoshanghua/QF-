@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Pragma" contect="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="./css/home.css?ver=18">
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./css/umy.css">
+
+    <title></title>
+</head>
+
+<body>
+    <div id="app" v-cloak v-loading="adminLoading">
+        <div class="fix_up">注塑集群<br>&nbsp;微终端</div>
+        <div class="left">
+            <el-tabs tab-position="left" class="leftHeight" v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane name="left_0">
+                    <div slot="label" class="">
+                        <div class="icon icon1"></div><span class="text">订单</span>
+                    </div>
+                    <div class="head_tab">
+                        <el-tabs tab-position="top" class="head" @tab-click="handleClick_1">
+                            <el-tab-pane label="全部订单">
+                            </el-tab-pane>
+                            <el-tab-pane label="待生产">
+                            </el-tab-pane>
+                            <el-tab-pane label="生产中">
+                            </el-tab-pane>
+                            <el-tab-pane label="已完成">
+                            </el-tab-pane>
+                            <el-tab-pane label="暂停中">
+                            </el-tab-pane>
+                            <el-tab-pane label="未下达">
+                            </el-tab-pane>
+                        </el-tabs>
+                        <div class="inner_all">
+                            <div class="inner_left">
+                                <div class="inner_left_up">
+                                    <search-com ref="searchRef" class="search" :searchdata="formSearchs[0].datas"
+                                        :searchform="formSearchs[0].forms" :remark="0" :btnForm="btnForm[0]"
+                                        @btnclick="btnClick">
+                                    </search-com>
+                                </div>
+                                <div class="inner_left_down">
+                                    <pltable-com :rowkey="'RowNumber'" :height="height" :tabledata="tableData[0]"
+                                        :rowstyle="rowStyle" :cellstyle="cellStyle" ref="tableRef_1"
+                                        :tableheader="tableColumns[0]" :tableloading="tableLoading[0]" :remark="0"
+                                        :sysid="sysID[0].ID" :isedit="true" :isclear="isClear[0]" :hasselect="hasselect"
+                                        :pagination="tablePagination[0]" @handlerowclick="handleRowClick"
+                                        @pagechange="pageChange" @pageSize="pageSize" @sortChange="sortChange"
+                                        @selectfun="selectFun">
+                                    </pltable-com>
+                                </div>
+                            </div>
+                            <div class="inner_right">
+                                <div class="inner_right_up">
+                                    <div class="right_head_title">
+                                        订单详情
+                                    </div>
+                                    <div class="right_head_content">
+                                        <el-row v-for="(item,i) in rightData_0" :key="i" class="right_row">
+                                            <el-col :span="8" class="border_1 border_left text_center">
+                                                {{item.label}}</el-col>
+                                            <el-col :span="16" class="border_1 el_col_right">
+                                                {{rightForm[0][item.value]}}</el-col>
+                                        </el-row>
+                                    </div>
+                                </div>
+                                <div class="inner_right_down">
+                                    <div class="right_head_title">
+                                        操作台
+                                    </div>
+                                    <div>
+                                        <!-- :disabled="item.OutfitStatus == 1 || item.OutfitStatus == 2 " -->
+                                        <el-select clearable filterable size="medium" placeholder="指定机台"
+                                            v-model="submitForm[0].OutfitID">
+                                            <el-option v-for="(item,i) in lines" :key="i" :label="item.LineName"
+                                                :disabled="item.ProductionStatus == 28" :value="item.OutfitID">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                    <div class="flex_column margin_top_1">
+                                        <el-button size="medium" type="up" @click="upOutfit" v-show="!disabled_1[0]">
+                                            上机</el-button>
+                                        <el-button size="medium" type="add" @click="addOutfit" v-show="!disabled_1[0]">
+                                            追加</el-button>
+                                        <!-- <el-button size="medium" type="down" @click="downOutfit"
+                                            v-show="!disabled_1[1]">完成</el-button>
+                                        <el-button size="medium" type="parse" @click="parseOutfit"
+                                            v-show="!disabled_1[2]">停机</el-button> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane name="left_1">
+                    <div slot="label" class="">
+                        <div class="icon icon2"></div><span class="text">车间</span>
+                    </div>
+                    <div class="head_tab">
+                        <el-tabs tab-position="top" class="head" @tab-click="handleClick_2">
+                            <el-tab-pane label="设备总览">
+                                <div class="inner_all">
+                                    <div class="inner_left">
+                                        <!-- <div class="inner_left_up">
+                                            <search-com ref="searchRef" class="search"
+                                                :searchdata="formSearchs[1].datas" :searchform="formSearchs[1].forms"
+                                                :remark="1" :btnForm="btnForm[1]" @btnclick="btnClick">
+                                            </search-com>
+                                        </div> -->
+                                        <div class="inner_left_down_2">
+                                            <div class="inner_card">
+                                                <div @click="handleRowClick(item,1,i)"
+                                                    :class="targetTag_1 == i?'inner_card_box inner_card_box_active':item.ProductionStatus ==0?'inner_card_box inner_card_box_info':item.ProductionStatus ==22?'inner_card_box inner_card_box_success':item.ProductionStatus ==25?'inner_card_box inner_card_box_success':item.ProductionStatus ==28?'inner_card_box inner_card_box_danger':'inner_card_box'"
+                                                    v-for="(item,i) in tableData[1]">
+                                                    <div
+                                                        :class="item.ProductionStatus ==0?'card_head infoBg':item.ProductionStatus ==22?'card_head successBg':item.ProductionStatus ==25?'card_head successBg':item.ProductionStatus ==28?'card_head dangerBg':'card_head'">
+                                                        {{item.LineName}}
+                                                    </div>
+                                                    <!-- primaryBg_2  头部保留原来颜色，不然不确定本来状态是什么-->
+                                                    <div class="card_contnet">
+                                                        <div class="label_info">产品：</div>
+                                                        <div class="label_black">
+                                                            {{item.MaterialNames}}
+                                                        </div>
+                                                        <div class="label_info">模具：</div>
+                                                        <div class="label_black">
+                                                            {{item.Extend12}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="inner_right">
+                                        <div class="inner_right_up_2 inner_right_height_2">
+                                            <div class="right_head_title flex_between">
+                                                <span>操作台</span>
+                                                <span class="refreshBtn" @click="dataSearch(1)">刷新</span>
+                                            </div>
+                                            <div class="flex_column margin_top_1">
+                                                <el-button size="medium" type="primary" @click="setOrder">开机选单
+                                                </el-button>
+                                                <!-- <el-button size="medium" type="parse" @click="changeOrder">更换订单
+                                                </el-button> -->
+
+                                                <el-button size="medium" type="parse" @click="parseOutfit_1"
+                                                    v-show="rightForm[1].ProductionStatus == 22">停机</el-button>
+                                                <el-button size="medium" type="up" @click="productionComplete"
+                                                    v-show="rightForm[1].ProductionStatus == 22 || rightForm[1].ProductionStatus == 28">
+                                                    生产完成
+                                                </el-button>
+                                            </div>
+                                        </div>
+                                        <div class="empty_White"></div>
+                                        <div class="inner_right_down_3">
+                                            <div class="right_head_title">
+                                                停机
+                                            </div>
+
+
+                                            <!-- <div>
+                                                <el-select clearable filterable size="medium" placeholder="停机原因"
+                                                    v-model="submitForm[1].AbnormalReason">
+                                                    <el-option v-for="(item,i) in reasons" :key="i" :label="item.name"
+                                                        :value="item.name"></el-option>
+                                                </el-select>
+                                            </div> -->
+                                            <div class="flex_column">
+                                                <el-button v-for="(item,i) in reasons" :key="i" size="medium"
+                                                    @click="setAbnormal(item.name)"
+                                                    :type="submitForm[1].AbnormalReason == item.name?'type':''">
+                                                    {{item.name}}</el-button>
+                                            </div>
+
+                                            <div class="flex_column margin_top_1">
+                                                <el-button size="medium" type="down"
+                                                    v-show="rightForm[1].ProductionStatus == 22" @click="AbnormalStart">
+                                                    异常开始
+                                                </el-button>
+                                                <el-button size="medium" type="up"
+                                                    v-show="rightForm[1].ProductionStatus == 28" @click="AbnormalEnd">
+                                                    异常结束</el-button>
+                                            </div>
+                                        </div>
+                                        <div class="empty_White"></div>
+                                        <!-- <div class="inner_right_down_2">
+                                            <div class="right_head_title" style="height: 3.4rem;">
+                                                设备状态
+                                            </div>
+                                            flex_column margin_top_1 
+                                            <div class="flex_around  look_btn">
+                                                <el-button class="look_btn_inner" size="medium" type="plain_info">计划停机</el-button>
+                                                <el-button class="look_btn_inner" size="medium" type="plain_primary">开工中</el-button>
+                                               
+                                            </div > 
+                                            <div class="flex_around  look_btn margin_top_1">
+                                                <el-button class="look_btn_inner" size="medium" type="plain_success">已完成</el-button>
+                                                <el-button class="look_btn_inner" size="medium" type="plain_danger">机台异常</el-button>
+                                            </div>
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="生产进度">
+                                <div class="inner_all">
+                                    <div class="inner_left">
+                                        <div class="inner_left_up">
+                                            <search-com ref="searchRef" class="search"
+                                                :searchdata="formSearchs[2].datas" :searchform="formSearchs[2].forms"
+                                                :remark="2" :btnForm="btnForm[2]" @btnclick="btnClick">
+                                            </search-com>
+                                        </div>
+                                        <div class="inner_left_down">
+                                            <pltable-com :rowkey="'RowNumber'" :height="height" ref="tableRef_2"
+                                                :tabledata="tableData[2]" :tableheader="tableColumns[2]"
+                                                :tableloading="tableLoading[2]" :remark="2" :sysid="sysID[2].ID"
+                                                :isedit="true" :isclear="isClear[2]" :pagination="tablePagination[2]"
+                                                @handlerowclick="handleRowClick" @pagechange="pageChange"
+                                                @pageSize="pageSize" @sortChange="sortChange">
+                                            </pltable-com>
+                                        </div>
+                                    </div>
+                                    <div class="inner_right">
+                                        <div class="inner_right_up">
+                                            <div class="right_head_title">
+                                                订单详情
+                                            </div>
+                                            <div class="right_head_content">
+                                                <el-row v-for="(item,i) in rightData_2" :key="i" class="right_row">
+                                                    <el-col :span="8" class="border_1 border_left text_center">
+                                                        {{item.label}}</el-col>
+                                                    <el-col :span="16" class="border_1 el_col_right">
+                                                        {{rightForm[2][item.value]}}</el-col>
+                                                </el-row>
+                                            </div>
+                                        </div>
+                                        <div class="inner_right_down">
+                                        </div>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="开机记录">
+                                <div class="inner_all">
+                                    <div class="inner_left">
+                                        <div class="inner_left_up">
+                                            <search-com ref="searchRef" class="search"
+                                                :searchdata="formSearchs[3].datas" :searchform="formSearchs[3].forms"
+                                                :remark="3" :btnForm="btnForm[3]" @btnclick="btnClick">
+                                            </search-com>
+                                        </div>
+                                        <div class="inner_left_down">
+                                            <pltable-com :rowkey="'RowNumber'" :height="height" ref="tableRef_3"
+                                                :tabledata="tableData[3]" :tableheader="tableColumns[3]"
+                                                :tableloading="tableLoading[3]" :remark="3" :sysid="sysID[3].ID"
+                                                :isedit="true" :isclear="isClear[3]" :pagination="tablePagination[3]"
+                                                @handlerowclick="handleRowClick" @pagechange="pageChange"
+                                                @pageSize="pageSize" @sortChange="sortChange">
+                                            </pltable-com>
+                                        </div>
+                                    </div>
+                                    <div class="inner_right">
+                                        <div class="inner_right_up">
+                                            <div class="right_head_title">
+                                                订单详情
+                                            </div>
+                                            <div class="right_head_content">
+                                                <el-row v-for="(item,i) in rightData_3" :key="i" class="right_row">
+                                                    <el-col :span="8" class="border_1 border_left text_center">
+                                                        {{item.label}}</el-col>
+                                                    <el-col :span="16" class="border_1 el_col_right">
+                                                        {{rightForm[3][item.value]}}</el-col>
+                                                </el-row>
+                                            </div>
+                                        </div>
+                                        <div class="inner_right_down">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane name="left_2">
+                    <div slot="label" class="">
+                        <div class="icon icon3"></div><span class="text">异常</span>
+                    </div>
+                    <div class="head_tab">
+                        <el-tabs tab-position="top" class="head" @tab-click="handleClick_3">
+                            <el-tab-pane label="异常停机">
+                                <div class="inner_all">
+                                    <div class="inner_left">
+                                        <div class="inner_left_up">
+                                            <search-com ref="searchRef" class="search"
+                                                :searchdata="formSearchs[4].datas" :searchform="formSearchs[4].forms"
+                                                :remark="1" :btnForm="btnForm[4]" @btnclick="btnClick">
+                                            </search-com>
+                                        </div>
+                                        <div class="inner_left_down">
+                                            <div class="inner_card">
+                                                <div @click="handleRowClick(item,4,i)"
+                                                    :class="targetTag_4 == i?'inner_card_box inner_card_box_2_active':'inner_card_box inner_card_box_danger'"
+                                                    v-for="(item,i) in tableData[4]">
+                                                    <div class="card_head dangerBg">
+                                                        {{item.LineName}}
+                                                    </div>
+                                                    <div class="card_contnet">
+                                                        <div class="label_info">异常原因：</div>
+                                                        <div class="label_black">
+                                                            {{item.AbnormalReason}}
+                                                        </div>
+                                                        <div class="label_info">持续时长：</div>
+                                                        <div class="label_black">
+                                                            {{item.TotalTime}}h
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="inner_right">
+                                        <div class="inner_right_up">
+                                            <div class="right_head_title">
+                                                订单详情
+                                            </div>
+                                            <div class="right_head_content">
+                                                <el-row v-for="(item,i) in rightData_4" :key="i" class="right_row">
+                                                    <el-col :span="8" class="border_1 border_left text_center">
+                                                        {{item.label}}</el-col>
+                                                    <el-col :span="16" class="border_1 el_col_right">
+                                                        {{rightForm[3][item.value]}}</el-col>
+                                                </el-row>
+                                            </div>
+                                        </div>
+                                        <div class="inner_right_down">
+                                            <div class="right_head_title">
+                                                操作台
+                                            </div>
+                                            <div class="flex_column margin_top_1">
+                                                <el-button size="medium" type="up" @click="AbnormalEnd2">异常结束
+                                                </el-button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="停机记录">
+                                <div class="inner_all">
+                                    <div class="inner_left">
+                                        <div class="inner_left_up">
+                                            <search-com ref="searchRef" class="search"
+                                                :searchdata="formSearchs[5].datas" :searchform="formSearchs[5].forms"
+                                                :remark="5" :btnForm="btnForm[5]" @btnclick="btnClick">
+                                            </search-com>
+                                        </div>
+                                        <div class="inner_left_down">
+                                            <pltable-com :rowkey="'RowNumber'" :height="height" ref="tableRef_5"
+                                                :tabledata="tableData[5]" :tableheader="tableColumns[5]"
+                                                :tableloading="tableLoading[5]" :remark="5" :sysid="sysID[5].ID"
+                                                :isedit="true" :isclear="isClear[5]" :pagination="tablePagination[5]"
+                                                @handlerowclick="handleRowClick" @pagechange="pageChange"
+                                                @pageSize="pageSize" @sortChange="sortChange">
+                                            </pltable-com>
+                                        </div>
+                                    </div>
+                                    <div class="inner_right">
+                                        <div class="inner_right_up">
+                                            <div class="right_head_title">
+                                                订单详情
+                                            </div>
+                                            <div class="right_head_content">
+                                                <el-row v-for="(item,i) in rightData_5" :key="i" class="right_row">
+                                                    <el-col :span="8" class="border_1 border_left text_center">
+                                                        {{item.label}}</el-col>
+                                                    <el-col :span="16" class="border_1 el_col_right">
+                                                        {{rightForm[5][item.value]}}</el-col>
+                                                </el-row>
+                                            </div>
+                                        </div>
+                                        <div class="inner_right_down">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane name="left_3">
+                    <div slot="label" class="">
+                        <div class="icon icon4"></div><span class="text">不良</span>
+                    </div>
+                    <div class="head_tab">
+                        <el-tabs tab-position="top" class="head" @tab-click="handleClick_4">
+                            <el-tab-pane label="机台不良">
+                                <div class="inner_all">
+                                    <div class="inner_left">
+                                        <div class="inner_left_up">
+                                            <search-com ref="searchRef" class="search"
+                                                :searchdata="formSearchs[6].datas" :searchform="formSearchs[6].forms"
+                                                :remark="6" :btnForm="btnForm[6]" @btnclick="btnClick">
+                                            </search-com>
+                                        </div>
+                                        <div class="inner_left_down">
+                                            <pltable-com :rowkey="'RowNumber'" :height="height" ref="tableRef_6"
+                                                :tabledata="tableData[6]" :tableheader="tableColumns[6]"
+                                                :tableloading="tableLoading[6]" :remark="6" :sysid="sysID[6].ID"
+                                                :isedit="true" :isclear="isClear[6]" :pagination="tablePagination[6]"
+                                                @handlerowclick="handleRowClick" @pagechange="pageChange"
+                                                @pageSize="pageSize" @sortChange="sortChange">
+                                            </pltable-com>
+                                        </div>
+                                    </div>
+                                    <div class="inner_right">
+                                        <div class="inner_right_up">
+                                            <div class="right_head_title">
+                                                订单详情
+                                            </div>
+                                            <div class="right_head_content">
+                                                <el-row v-for="(item,i) in rightData_6" :key="i" class="right_row">
+                                                    <el-col :span="8" class="border_1 border_left text_center">
+                                                        {{item.label}}</el-col>
+                                                    <el-col :span="16" class="border_1 el_col_right">
+                                                        {{rightForm[6][item.value]}}</el-col>
+                                                </el-row>
+                                            </div>
+                                        </div>
+                                        <div class="inner_right_down">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="报工不良">
+                                <div class="inner_all">
+                                    <div class="inner_left">
+                                        <div class="inner_left_up">
+                                            <search-com ref="searchRef" class="search"
+                                                :searchdata="formSearchs[7].datas" :searchform="formSearchs[7].forms"
+                                                :remark="7" :btnForm="btnForm[7]" @btnclick="btnClick">
+                                            </search-com>
+                                        </div>
+                                        <div class="inner_left_down">
+                                            <pltable-com :rowkey="'RowNumber'" :height="height" ref="tableRef_7"
+                                                :tabledata="tableData[7]" :tableheader="tableColumns[7]"
+                                                :tableloading="tableLoading[7]" :remark="7" :sysid="sysID[7].ID"
+                                                :isedit="true" :isclear="isClear[7]" :pagination="tablePagination[7]"
+                                                @handlerowclick="handleRowClick" @pagechange="pageChange"
+                                                @pageSize="pageSize" @sortChange="sortChange">
+                                            </pltable-com>
+                                        </div>
+                                    </div>
+                                    <div class="inner_right">
+                                        <div class="inner_right_up">
+                                            <div class="right_head_title">
+                                                订单详情
+                                            </div>
+                                            <div class="right_head_content">
+                                                <el-row v-for="(item,i) in rightData_7" :key="i" class="right_row">
+                                                    <el-col :span="8" class="border_1 border_left text_center">
+                                                        {{item.label}}</el-col>
+                                                    <el-col :span="16" class="border_1 el_col_right">
+                                                        {{rightForm[7][item.value]}}</el-col>
+                                                </el-row>
+                                            </div>
+                                        </div>
+                                        <div class="inner_right_down">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane name="left_4">
+                    <div slot="label" class="">
+                        <div class="icon icon5"></div><span class="text">报表</span>
+                    </div>
+                    <div class="head_tab">
+                        <el-tabs tab-position="top" class="head" @tab-click="handleClick_5">
+                            <el-tab-pane label="汇总">
+                                <div class="inner_all">
+                                    <div class="inner_left_2">
+                                        <div class="inner_left_up">
+                                            <search-com ref="searchRef" class="search"
+                                                :searchdata="formSearchs[8].datas" :searchform="formSearchs[8].forms"
+                                                :remark="8" :btnForm="btnForm[8]" @btnclick="btnClick">
+                                            </search-com>
+                                        </div>
+                                        <div class="inner_left_down">
+                                            <pltable-com :rowkey="'RowNumber'" :height="height" ref="tableRef_8"
+                                                :tabledata="tableData[8]" :tableheader="tableColumns[8]"
+                                                :tableloading="tableLoading[8]" :remark="8" :sysid="sysID[8].ID"
+                                                :isedit="true" :isclear="isClear[8]" :pagination="tablePagination[8]"
+                                                @handlerowclick="handleRowClick" @pagechange="pageChange"
+                                                @pageSize="pageSize" @sortChange="sortChange">
+                                            </pltable-com>
+                                        </div>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="明细">
+                                <div class="inner_all">
+                                    <div class="inner_left">
+                                        <div class="inner_left_up">
+                                            <search-com ref="searchRef" class="search"
+                                                :searchdata="formSearchs[9].datas" :searchform="formSearchs[9].forms"
+                                                :remark="9" :btnForm="btnForm[9]" @btnclick="btnClick">
+                                            </search-com>
+                                        </div>
+                                        <div class="inner_left_down">
+                                            <pltable-com :rowkey="'RowNumber'" :height="height" ref="tableRef_9"
+                                                :tabledata="tableData[9]" :tableheader="tableColumns[9]"
+                                                :tableloading="tableLoading[9]" :remark="9" :sysid="sysID[7].ID"
+                                                :isedit="true" :isclear="isClear[9]" :pagination="tablePagination[7]"
+                                                @handlerowclick="handleRowClick" @pagechange="pageChange"
+                                                @pageSize="pageSize" @sortChange="sortChange">
+                                            </pltable-com>
+                                        </div>
+                                    </div>
+                                    <div class="inner_right">
+                                        <div class="inner_right_up">
+                                            <div class="right_head_title">
+                                                订单详情
+                                            </div>
+                                            <div class="right_head_content">
+                                                <el-row v-for="(item,i) in rightData_9" :key="i" class="right_row">
+                                                    <el-col :span="8" class="border_1 border_left text_center">
+                                                        {{item.label}}</el-col>
+                                                    <el-col :span="16" class="border_1 el_col_right">
+                                                        {{rightForm[9][item.value]}}</el-col>
+                                                </el-row>
+                                            </div>
+                                        </div>
+                                        <div class="inner_right_down">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                </el-tab-pane>
+            </el-tabs>
+            <el-popover placement="right" width="80" trigger="click">
+                <div slot="reference" class="fix_down flex_around">
+                    <img src="./img/user.svg" width="20px" height="20px" class="user" />
+                    <div>{{userInfo.Name}}</div>
+                    <i class="el-icon-arrow-right"></i>
+                </div>
+                <div class="flex_column login_span">
+                    <span @click="editLogin">修改密码</span>
+                    <span @click="exitLogin">退出登录</span>
+                </div>
+            </el-popover>
+        </div>
+
+        <form-dialog-com ref="loginForm" :title="'修改密码'" :dialogshow="dialogShow" :formdata="formData"
+            :formrules="formRules" :formcontroller="formController" @dialogbtnclick="dialogBtnClick">
+        </form-dialog-com>
+
+        <el-dialog title="更换单" :visible.sync="dialogOrder" width="80%">
+            <search-com ref="searchRef" class="search" :searchdata="formSearchs[10].datas"
+                :searchform="formSearchs[10].forms" :remark="10" :btnForm="btnForm[10]" @btnclick="btnClick">
+            </search-com>
+            <pltable-com :rowkey="'RowNumber'" :height="'400px'" :tabledata="tableData[10]" :rowstyle="rowStyle"
+                :cellstyle="cellStyle" ref="tableRef_10" :tableheader="tableColumns[10]"
+                :tableloading="tableLoading[10]" :remark="10" :sysid="sysID[10].ID" :isclear="isClear[10]"
+                :pagination="tablePagination[10]" :hasselect="true" :ismultiple="false" @selectfun="selectFun"
+                @pagechange="pageChange" @pageSize="pageSize" @sortChange="sortChange">
+            </pltable-com>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogOrder = false">取 消</el-button>
+                <el-button type="primary" @click="sureChangeOrder">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+</body>
+<script src="./js/vue.js"></script>
+<script src="./js/index.js"></script>
+<script src="./js/token.js"></script>
+<script src="./js/axios.min.js"></script>
+<script src="./js/DateJson.js"></script>
+<script src="./js/echarts.js"></script>
+<script src="./component/searchCom.js"></script>
+<script src="./component/formDialogCom.js"></script>
+<script src="./component/plTable.js?ver=8"></script>
+<script src="./js/plIndex.js?ver=3"></script>
+<script type="text/javascript">
+    if (document.documentElement.clientWidth <= 1280) {
+        document.documentElement.style.fontSize = '10px';
+    } else {
+        document.documentElement.style.fontSize = document.documentElement.clientWidth / 1920 * 10 + 'px';
+    }
+</script>
+<script type="module">
+    import newFormatDate from "./js/newFormatDate.js"
+    var app = new Vue({
+        el: "#app",
+        components: {
+            'search-com': searchCom,
+            'pltable-com': plTableCom,
+            'form-dialog-com': formDialogCom
+        },
+        data: {
+            hasselect: false,
+            disabled_1: [false, false, false],
+            dialogOrder: false,
+            dialogShow: false,
+            formData: {
+                Account: "",
+                Pwd: "",
+                NewPwd: "",
+                SurePwd: "",
+            },
+            formController: [
+                { label: "账号", prop: "Account", type: "input", disabled: true },
+                { label: "密码", prop: "Pwd", type: "input", disabled: true },
+                {
+                    label: "新密码",
+                    prop: "NewPwd",
+                    type: "input",
+                    inputType: "password",
+                },
+                {
+                    label: "确认密码",
+                    prop: "SurePwd",
+                    type: "input",
+                    inputType: "password",
+                },
+            ],
+            formRules: {
+                NewPwd: [
+                    { required: true, message: "新密码为必填项", trigger: "blur" },
+                ],
+                SurePwd: [
+                    { required: true, message: "二次密码为必填项", trigger: "blur" },
+                ],
+            },
+            targetTag_1: -1,
+            targetTag_4: -1,
+            height: window.innerHeight - 180 + 'px',
+            lines: [],
+            submitForm: [{
+                OutfitID: "",
+                LineName: "",
+            }, {}],
+            userInfo: { Name: '' },
+            activeName: 'left_0',
+            rightForm: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+            reasons: [{ name: '机台维修' }, { name: '模具维修' }],
+            rightData_0: [{ label: '材质', value: 'Extend7' }, { label: '单重', value: 'Weight' }, { label: '颜色', value: 'Extend11' }, { label: '数量', value: 'Qty' }, { label: '完成数', value: 'CompletionQty' }, { label: '状态', value: 'ProductionStatusName' }],
+            rightData_1: [{ label: '材质', value: 'Extend7' }, { label: '单重', value: 'Weight' }, { label: '颜色', value: 'Extend11' }, { label: '数量', value: 'Qty' }, { label: '完成数', value: 'CompletionQty' }, { label: '状态', value: 'ProductionStatusName' }],
+            rightData_2: [{ label: '材质', value: 'Extend7' }, { label: '单重', value: 'Weight' }, { label: '颜色', value: 'Extend11' }, { label: '数量', value: 'Qty' }, { label: '完成数', value: 'CompletionQty' }, { label: '状态', value: 'ProductionStatusName' }],
+            rightData_3: [{ label: '订单', value: 'OrderNo' }, { label: '单重', value: 'Weight' }, { label: '欠数', value: 'OweQty' }, { label: '模具', value: 'Qty' }, { label: '模穴数', value: 'Extend10' }],
+            rightData_4: [{ label: '日期', value: 'StartDate' }, { label: '开始', value: 'CreatedOn' }, { label: '订单', value: 'OrderNo' }, { label: '材质', value: 'Extend7' }, { label: '单重', value: 'Weight' }, { label: '颜色', value: 'Extend11' }, { label: '数量', value: 'Qty' }, { label: '完成数', value: 'CompletionQty' }, { label: '欠数', value: 'OweQty' }, { label: '状态', value: 'ProductionStatusName' }],
+            rightData_5: [{ label: '订单', value: 'OrderNo' }, { label: '单重', value: 'Weight' }, { label: '颜色', value: 'Extend11' }, { label: '欠数', value: 'OweQty' }, { label: '模具', value: 'Extend12' }, { label: '模穴数', value: 'Extend10' }, { label: '停机原因', value: 'Remark1' }],
+            rightData_6: [{ label: '订单', value: 'OrderNo' }, { label: '单重', value: 'Weight' }, { label: '颜色', value: 'Extend11' }, { label: '模具', value: 'Extend12' }, { label: '模穴数', value: 'Extend10' }, { label: '停机原因', value: 'Remark1' }],
+            rightData_7: [{ label: '订单', value: 'OrderNo' }, { label: '单重', value: 'Weight' }, { label: '颜色', value: 'Extend11' }, { label: '模具', value: 'Extend12' }, { label: '模穴数', value: 'Extend10' }, { label: '停机原因', value: 'Remark1' }],
+            rightData_9: [{ label: '订单', value: 'OrderNo' }, { label: '单重', value: 'Weight' }, { label: '颜色', value: 'Extend11' }, { label: '欠数', value: 'OweQty' }, { label: '不良数', value: 'BadQty' }, { label: '模具', value: 'Extend12' }, { label: '模穴数', value: 'Extend10' }, { label: '停机原因', value: 'Remark1' }],
+            formSearchs: [
+                {
+                    datas: {},
+                    forms: [],
+                },
+                {
+                    datas: {},
+                    forms: [],
+                },
+                {
+                    datas: {},
+                    forms: [],
+                },
+                {
+                    datas: {},
+                    forms: [],
+                },
+                {
+                    datas: {},
+                    forms: [],
+                },
+                {
+                    datas: {},
+                    forms: [],
+                },
+                {
+                    datas: {},
+                    forms: [],
+                },
+                {
+                    datas: {},
+                    forms: [],
+                },
+                {
+                    datas: {},
+                    forms: [],
+                },
+                {
+                    datas: {},
+                    forms: [],
+                },
+                {
+                    datas: {},
+                    forms: [],
+                }
+            ],
+            btnForm: [[], [], [], [], [], [], [], [], [], [], []],
+            tableData: [[], [], [], [], [], [], [], [], [], [], []],
+            tableColumns: [[], [], [], [], [], [], [], [], [], [], []],
+            tableLoading: [false, false, false, false, false, false, false, false, false, false, false],
+            isClear: [false, false, false, false, false, false, false, false, false, false, false],
+            tablePagination: [
+                { pageIndex: 1, pageSize: 13, pageTotal: 0 },
+                { pageIndex: 1, pageSize: 0, pageTotal: 0 },
+                { pageIndex: 1, pageSize: 13, pageTotal: 0 },
+                { pageIndex: 1, pageSize: 13, pageTotal: 0 },
+                { pageIndex: 1, pageSize: 0, pageTotal: 0 },
+                { pageIndex: 1, pageSize: 13, pageTotal: 0 },
+                { pageIndex: 1, pageSize: 13, pageTotal: 0 },
+                { pageIndex: 1, pageSize: 13, pageTotal: 0 },
+                { pageIndex: 1, pageSize: 13, pageTotal: 0 },
+                { pageIndex: 1, pageSize: 13, pageTotal: 0 },
+                { pageIndex: 1, pageSize: 13, pageTotal: 0 },
+            ],
+            adminLoading: false,
+            home_tag_1: 0,
+            selectionData: [[], [], [], [], [], [], [], [], [], [], []],
+            sysID: [{ ID: 7892 }, { ID: 7828 }, { ID: 7830 }, { ID: 7827 }, { ID: 7829 }, { ID: 7825 }, { ID: 7825 }, { ID: 36 }, { ID: 36 }, { ID: 36 }, { ID: 7830 }]
+
+        },
+        created() {
+            this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            if (!this.userInfo) {
+                // this.$message.error("请先登录！");
+                // setTimeout(() => {
+                //     window.location.href = "login.html";
+                // }, 300);
+                // 自动登录
+                this.login()
+            } else {
+                this.getTableHeader();
+                this.getLineData();
+            }
+
+            // this.setHeight();
+            for (var i = 0; i < 53; i++) {
+                // this.tableData[1].push({ RowNumber: i, LineName: '线别' + i, MaterialName: "产品" + i, Status: i })
+                // this.tableData[4].push({ RowNumber: i, LineName: '线别' + i, MaterialName: "产品" + i, Status: i })
+            }
+        },
+        watch: {
+        },
+        mounted() {
+
+        },
+        methods: {
+            // 登录
+            login() {
+                this.adminLoading = true;
+                let param = new URLSearchParams()
+                param.append('Account', 'admin')
+                param.append('Pwd', '888666')
+                //账号密码验证成功
+                axios.post("http://192.168.101.160/Login/CheckAccount", param,
+                    {
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    })
+                    .then(function (response) {
+                        if (response.data.result == true) {
+                            _this.adminLoading = false;
+                            localStorage.setItem('url', 'http://192.168.101.160');
+                            setCookie("token", response.data.token);
+                            localStorage.setItem('userInfo', JSON.stringify(response.data));
+                            _this.getTableHeader();
+                            _this.getLineData();
+
+                        }
+                        else {
+                            _this.adminLoading = false;
+                            _this.$message({
+                                message: response.data.msg,
+                                type: 'error'
+                            });
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+
+                    });
+            },
+            // 获取高度
+            setHeight() {
+                setTimeout(() => {
+                    let rem = (document.documentElement.clientHeight - 180) + 'px';
+                    _this.$set(_this, 'height', rem);
+                }, 600)
+            },
+            // 获取机台
+            getLineData() {
+                let form = {};
+                form["dicID"] = 3026;
+                form["rows"] = 0;
+                form["OrganizeTypeID"] = 6;
+                // form["ProcessValues"] = '注塑';
+                axiosPostRequst(`/APSAPI/APSData`, form)
+                    .then(function (res) {
+                        const { data, forms, result, msg } = res;
+                        if (result) {
+                            _this.lines = [];
+                            if (data.length != 0) {
+                                data.forEach(x => {
+                                    let LineName = '';
+                                    if (x.MaterialID) {
+                                        LineName = x.OrganizeName + "(" + x.MaterialName + ")"
+                                    }
+                                    _this.lines.push({ ProductionStatus: x.ProductionStatus, LineName: x.OrganizeName, OutfitID: x.OrganizeID, OutfitStatus: x.OutfitStatus, MaterialID: x.MaterialID, MaterialName: x.MaterialName })
+                                })
+                            }
+                        }
+                    }).catch(() => {
+
+                    })
+            },
+            // 获取表头
+            getTableHeader() {
+                let IDs = this.sysID;
+                axiosPostRequst(`/APSAPI/GetConfig`, IDs)
+                    .then(function (res) {
+                        const { datas, forms, result, msg } = res;
+                        if (result) {
+                            // 获取每个表头
+                            datas.some((m, i) => {
+                                m.forEach((n) => {
+                                    // 进行验证
+                                    _this.verifyDta(n);
+                                    if (n.childrens && n.children.length != 0) {
+                                        n.childrens.forEach((x) => {
+                                            _this.verifyDta(x);
+                                        });
+                                    }
+                                });
+                                _this.$set(_this.tableColumns, i, m);
+                            });
+                            // 获取查询的初始化字段 组件 按钮
+                            forms.some((x, z) => {
+                                _this.$set(_this.formSearchs[z].datas, "dicID", IDs[z].ID);
+                                x.forEach((y) => {
+                                    if (y.prop && y.value) {
+                                        _this.$set(_this.formSearchs[z].datas, [y.prop], y.value);
+                                    } else {
+                                        _this.$set(_this.formSearchs[z].datas, [y.prop], "");
+                                    }
+                                });
+                                _this.$set(_this.formSearchs[z], "forms", x);
+                            });
+                            _this.getTableData(_this.formSearchs[0].datas, 0);
+                        }
+                    }).catch(() => {
+
+                    })
+            },
+            // 验证数据
+            verifyDta(n) {
+                for (let name in n) {
+                    if (
+                        (name == "component" && n[name]) ||
+                        (name == "button" && n[name]) ||
+                        (name == "active" && n[name])
+                    ) {
+                        n[name] = eval("(" + n[name] + ")");
+                    }
+                }
+            },
+            handleClick(tab) {
+                if (tab.index == 1) {
+                    if (this.tableData[1].length == 0) {
+                        this.adminLoading = true;
+                        this.dataSearch(1)
+                    }
+                } else if (tab.index == 2) {
+                    if (this.tableData[4].length == 0) {
+                        this.adminLoading = true;
+                        this.dataSearch(4)
+                    }
+                } else if (tab.index == 3) {
+                    if (this.tableData[6].length == 0) {
+                        this.dataSearch(6)
+                    }
+                } else if (tab.index == 4) {
+                    if (this.tableData[8].length == 0) {
+                        this.dataSearch(8)
+                    }
+                }
+                // if (tab.index == 3) {
+                //     this.$nextTick(() => {
+                //         _this.$refs.tableRef_6.$refs.plxTable.doLayout();
+                //     })
+                // } else if (tab.index == 4) {
+                //     this.$nextTick(() => {
+                //         _this.$refs.tableRef_8.$refs.plxTable.doLayout();
+                //     })
+                // }
+            },
+            handleClick_1(tab) {
+                this.home_tag_1 = tab.index;
+                if (tab.index == 0) {
+                    this.hasselect = false;
+                    this.formSearchs[0].datas["ProductionStatus"] = '';
+                    this.$set(this.disabled_1, 0, false);
+                    this.hasselect = false;
+                    // this.$set(this.disabled_1, 1, false);
+                    // this.$set(this.disabled_1, 2, false);
+                } else if (tab.index == 1) {
+                    this.formSearchs[0].datas["ProductionStatus"] = 21; // 已下达的数据
+                    this.$set(this.disabled_1, 0, false);
+                    // this.$set(this.disabled_1, 1, true);
+                    // this.$set(this.disabled_1, 2, true);
+                } else if (tab.index == 2) {
+                    this.hasselect = false;
+                    this.formSearchs[0].datas["ProductionStatus"] = 22; // 生产中
+                    this.$set(this.disabled_1, 0, true);
+                    // this.$set(this.disabled_1, 1, false);
+                    // this.$set(this.disabled_1, 2, false);
+                } else if (tab.index == 3) {
+                    this.hasselect = false;
+                    this.formSearchs[0].datas["ProductionStatus"] = 25; // 已完成
+                    this.$set(this.disabled_1, 0, true);
+                    // this.$set(this.disabled_1, 1, true);
+                    // this.$set(this.disabled_1, 2, true);
+                } else if (tab.index == 4) {
+                    this.hasselect = false;
+                    this.formSearchs[0].datas["ProductionStatus"] = 28; // 停机
+                    this.$set(this.disabled_1, 0, false);
+                    // this.$set(this.disabled_1, 1, false);
+                    // this.$set(this.disabled_1, 2, true);
+                } else if (tab.index == 5) {
+                    this.hasselect = false;
+                    this.formSearchs[0].datas["ProductionStatus"] = 26; // 未下达
+                    this.$set(this.disabled_1, 0, true);
+                    // this.$set(this.disabled_1, 1, true);
+                    // this.$set(this.disabled_1, 2, true);
+                }
+                this.dataSearch(0);
+            },
+            handleClick_2(tab) {
+                let newIndex = parseInt(tab.index) + 1;
+                if (this.tableData[newIndex].length == 0) {
+                    this.dataSearch(newIndex)
+                }
+                // if (tab.index == 1) {
+                //     this.$nextTick(() => {
+                //         _this.$refs.tableRef_2.$refs.plxTable.doLayout();
+                //     })
+                // } else if (tab.index == 2) {
+                //     this.$nextTick(() => {
+                //         _this.$refs.tableRef_3.$refs.plxTable.doLayout();
+                //     })
+                // }
+            },
+            handleClick_3(tab) {
+                let newIndex = parseInt(tab.index) + 4;
+                if (this.tableData[newIndex].length == 0) {
+                    this.dataSearch(newIndex)
+                }
+                // if (tab.index == 1) {
+                //     this.$nextTick(() => {
+                //         _this.$refs.tableRef_5.$refs.plxTable.doLayout();
+                //     })
+                // }
+            },
+            handleClick_4(tab) {
+                // if (tab.index == 0) {
+                //     this.$nextTick(() => {
+                //         _this.$refs.tableRef_6.$refs.plxTable.doLayout();
+                //     })
+                // } else {
+                //     this.$nextTick(() => {
+                //         _this.$refs.tableRef_7.$refs.plxTable.doLayout();
+                //     })
+                // }
+            },
+            handleClick_5(tab) {
+                // if (tab.index == 0) {
+                //     this.$nextTick(() => {
+                //         _this.$refs.tableRef_8.$refs.plxTable.doLayout();
+                //     })
+                // } else {
+                //     this.$nextTick(() => {
+                //         _this.$refs.tableRef_9.$refs.plxTable.doLayout();
+                //     })
+                // }
+            },
+            // 统一渲染按钮事件
+            btnClick(methods, parms, index, remarkTb) {
+                if (parms) {
+                    // 下标 要用的数据 标题 ref
+                    this[methods](remarkTb, index, parms);
+                } else {
+                    this[methods](remarkTb, index);
+                }
+            },
+            // 查询
+            dataSearch(remarkTb) {
+                this.tagRemark = remarkTb;
+                this.tableData[remarkTb] = [];
+                this.$set(this.tableLoading, remarkTb, true);
+                this.$set(this.isClear, remarkTb, true);
+                this.tablePagination[remarkTb].pageIndex = 1;
+                this.getTableData(this.formSearchs[remarkTb].datas, remarkTb);
+                setTimeout(() => {
+                    this.$set(this.isClear, remarkTb, false);
+                });
+            },
+            // 获取表格数据
+            getTableData(form, remarkTb) {
+                this.$set(this.tableLoading, remarkTb, true);
+                form["rows"] = this.tablePagination[remarkTb].pageSize;
+                form["page"] = this.tablePagination[remarkTb].pageIndex;
+                if (remarkTb == 0) {
+                    axiosPostRequst(`/APSAPI/GetMergeBOMData`, form)
+                        .then(function (res) {
+                            _this.adminLoading = false;
+                            const { data, count, result, msg } = res;
+                            if (result) {
+                                _this.$set(_this.tableLoading, remarkTb, false);
+                                _this.$set(_this.tableData, remarkTb, data);
+                                _this.$set(_this.tablePagination[remarkTb], "pageTotal", count);
+                            } else {
+                                _this.$set(_this.tableLoading, remarkTb, false);
+                                _this.$message({
+                                    message: msg,
+                                    type: "error",
+                                    dangerouslyUseHTMLString: true,
+                                });
+                            }
+                        }).catch(() => {
+                            _this.adminLoading = false;
+                        })
+                } else {
+                    axiosPostRequst(`/APSAPI/APSData`, form)
+                        .then(function (res) {
+                            _this.adminLoading = false;
+                            const { data, count, result, msg } = res;
+                            if (result) {
+                                _this.$set(_this.tableLoading, remarkTb, false);
+                                _this.$set(_this.tableData, remarkTb, data);
+                                _this.$set(_this.tablePagination[remarkTb], "pageTotal", count);
+                            } else {
+                                _this.$set(_this.tableLoading, remarkTb, false);
+                                _this.$message({
+                                    message: msg,
+                                    type: "error",
+                                    dangerouslyUseHTMLString: true,
+                                });
+                            }
+                        }).catch(() => {
+                            _this.adminLoading = false;
+                        })
+                }
+            },
+            // 单击行
+            handleRowClick(row, remarkTb, index) {
+                if (remarkTb == 0) {
+                    if (this.home_tag_1 == 1) {
+                        this.formSearchs[0]["MaterialID"] = row.MaterialID
+                    }
+                }
+                if (remarkTb == 1) {
+                    this.targetTag_1 = index;
+                } else if (remarkTb == 4) {
+                    this.targetTag_4 = index;
+                }
+                this.$set(this.rightForm, remarkTb, row);
+            },
+            // 第几页
+            pageChange(val, remarkTb, filtertb) {
+                this.$set(this.tablePagination[remarkTb], "pageIndex", val);
+                this.getTableData(this.formSearchs[remarkTb].datas, remarkTb);
+            },
+            // 页数
+            pageSize(val, remarkTb, filtertb) {
+                this.$set(this.tablePagination[remarkTb], "pageSize", val);
+                this.getTableData(this.formSearchs[remarkTb].datas, remarkTb);
+            },
+            // 排序
+            sortChange(order, prop, remarkTb, filtertb, row, index) {
+                if (filtertb == -100) {
+                    // 改变父表格的行数据
+                    this.changeTableRowData(remarkTb, row, index);
+                    return;
+                }
+                if (order) {
+                    if (order === "desc") {
+                        this.formSearchs[remarkTb].datas["sort"] = prop + " DESC";
+                    } else {
+                        this.formSearchs[remarkTb].datas["sort"] = prop + " ASC";
+                    }
+                } else {
+                    this.formSearchs[remarkTb].datas["sort"] = null;
+                }
+                this.dataSearch(remarkTb);
+            },
+            // 选择数据
+            selectFun(data, remarkTb, row) {
+                this.selectionData[remarkTb] = data;
+            },
+            // 改变父组件表格行数据
+            changeTableRowData(remarkTb, row, index) {
+                for (let name in row) {
+                    this.$set(this.tableData[remarkTb][index], name, row[name]);
+                }
+            },
+            // 修改密码
+            editLogin() {
+                this.formData.Account = this.userInfo.Account;
+                this.formData.Pwd = this.userInfo.dev_Account.Pwd;
+                this.dialogShow = true;
+            },
+            // 确定修改密码
+            dialogBtnClick(val) {
+                let newData = [];
+                let obj = {};
+                if (val) {
+                    if (this.formData.NewPwd != this.formData.SurePwd) {
+                        this.$message.error("两次输入的密码不一致！");
+                    } else {
+                    }
+                    obj["Account"] = this.formData.Account;
+                    obj["Pwd"] = this.formData.NewPwd;
+                    obj["dicID"] = 25;
+                    newData.push(obj);
+                    axiosPostRequst(`/APSAPI/SaveData`, newData)
+                        .then(function (res) {
+                            const { result, data, count, msg } = res;
+                            if (result) {
+                                _this.$message({
+                                    message: msg,
+                                    type: "success",
+                                    dangerouslyUseHTMLString: true,
+                                });
+                                setTimeout(() => {
+                                    window.location.href = 'login.html'
+                                    localStorage.clear()
+                                }, 200)
+                            } else {
+                                _this.$message({
+                                    message: msg,
+                                    type: "error",
+                                    dangerouslyUseHTMLString: true,
+                                });
+                            }
+                            _this.dialogShow = false;
+                        })
+                } else {
+                    this.$refs.loginForm.$refs.formData.resetFields();
+                    this.dialogShow = false;
+                }
+            },
+            // 退出登录
+            exitLogin() {
+                this.$confirm("确定要退出吗？")
+                    .then((_) => {
+                        window.location.href = 'login.html'
+                        localStorage.clear()
+                    })
+                    .catch((_) => { });
+            },
+            // 选择机台
+            setLineName(val, index) {
+                console.log(this.submitForm[index])
+            },
+            /////////////////////////订单模块的事件////////////
+            // 追加
+            addOutfit() {
+
+            },
+            // 上机
+            upOutfit() {
+                if (this.selectionData[0].length == 0) {
+                    this.$message.error("请选择需要上机的数据");
+                } else {
+                    let MaterialID = '';
+                    let flag = 0;
+                    let submitData = [];
+                    this.selectionData[0].forEach((x, i) => {
+                        if (i == 0) {
+                            MaterialID = x.MaterialID;
+                        } else {
+                            if (x.MaterialID != MaterialID) {
+                                flag = 1;
+                            }
+                        }
+                    })
+                    if (flag == 1) {
+                        this.$message.error("只能选择同一产品上机，请检查一下，存在选中不同产品！")
+                    } else {
+                        if (!this.submitForm[0].OutfitID) {
+                            this.$message.error("请选择要上机的机台！");
+                        } else {
+                            let HasMaterialIDs = _this.lines.filter(y => { return y.OutfitID == _this.submitForm[0].OutfitID });
+                            if (HasMaterialIDs[0].MaterialID && MaterialID != HasMaterialIDs[0].MaterialID) {
+                                this.$message.error("该机台正在生产" + HasMaterialIDs[0].MaterialName + ",选择的产品与它不符，不能一起生产！");
+                            } else {
+                                this.$confirm('确认是否上机吗？').then((res) => {
+                                    _this.adminLoading = true;
+                                    // 新增一笔开机记录
+                                    _this.selectionData[0].forEach(o => {
+                                        let obj = JSON.parse(JSON.stringify(o));
+                                        obj["dicID"] = 7831;
+                                        obj["StartStopType"] = 1;
+                                        obj["OutfitID"] = _this.submitForm[0].OutfitID;
+                                        obj["StartDate"] = newFormatDate.formatTodayDate();
+                                        submitData.push(obj);
+
+                                        // 正常保存生产中的状态
+                                        let obj3 = JSON.parse(JSON.stringify(o));
+                                        obj3.ProductionStatus = 22;
+                                        obj3["OutfitID"] = _this.submitForm[0].OutfitID;
+                                        submitData.push(obj3);
+
+                                    })
+                                    // 机台显示被占用
+                                    submitData.push({ OrganizeID: _this.rightForm[0].OutfitID, dicID: 36, OutfitStatus: 2 });
+                                    _this.generalSaveData(submitData, 0);
+
+                                }).catch(() => {
+
+                                })
+                            }
+                        }
+                    }
+                }
+            },
+            // 上机旧版
+            // upOutfit() {
+            //     if (!this.submitForm[0].OutfitID) {
+            //         this.$message.error("请选择要上机的机台！");
+            //     } else if (Object.keys(this.rightForm[0]).length == 0) {
+            //         this.$message.error("请单击选择需要上机的订单！");
+            //     } else if (this.rightForm[0].ProductionStatus != 21) {
+            //         this.$message.error("已下达且未生产的订单才可上机！");
+            //     } else {
+            //         this.$confirm('确认是否上机吗？').then((res) => {
+            //             _this.adminLoading = true;
+            //             let submitData = [];
+            //             // 新增一笔开机记录
+            //             let obj = JSON.parse(JSON.stringify(_this.rightForm[0]));
+            //             obj["dicID"] = 7831;
+            //             obj["StartStopType"] = 1;
+            //             obj["OutfitID"] = _this.submitForm[0].OutfitID;
+            //             obj["StartDate"] = newFormatDate.formatTodayDate();
+            //             // 机台显示被占用
+            //             submitData.push({ OrganizeID: _this.rightForm[0].OutfitID, dicID: 36, OutfitStatus: 2 });
+            //             submitData.push(obj);
+            //             // 如何刚好是停机的直接也给停机记录补上结束时间
+            //             if (_this.rightForm[0].ProductionStatus == 28) {
+            //                 let obj2 = {};
+            //                 obj2["dicID"] = 7831;
+            //                 obj2["StartStopRecordID"] = _this.rightForm[0].StopRecordID;
+            //                 obj2["EndDate"] = newFormatDate.formatTodayDate();
+            //                 submitData.push(obj2);
+            //             }
+            //             // 正常保存生产中的状态
+            //             let obj3 = JSON.parse(JSON.stringify(_this.rightForm[0]));
+            //             obj3.ProductionStatus = 22;
+            //             obj3["OutfitID"] = _this.submitForm[0].OutfitID;
+            //             submitData.push(obj3);
+            //             _this.generalSaveData(submitData, 0);
+
+            //         }).catch(() => {
+
+            //         })
+
+            //     }
+            // },
+            // 下机
+            downOutfit() {
+                if (Object.keys(this.rightForm[0]).length == 0) {
+                    this.$message.error("请单击选择需要下机的订单！");
+                } else if (this.rightForm[0].ProductionStatus != 22 && this.rightForm[0].ProductionStatus != 28) { // 生产中，停机 完成的才可下机
+                    this.$message.error("该订单不符合下机条件！");
+                } else {
+                    this.$confirm('确认是否下机吗？').then((res) => {
+                        _this.adminLoading = true;
+                        let submitData = [];
+                        // 给下机的订单补上结束时间
+                        let obj = {};
+                        obj["dicID"] = 7831;
+                        obj["StartStopRecordID"] = _this.rightForm[0].StartRecordID;
+                        obj["EndDate"] = newFormatDate.formatTodayDate();
+                        submitData.push(obj);
+                        // 如何刚好是停机的直接也给停机记录补上结束时间
+                        if (_this.rightForm[0].ProductionStatus == 28) {
+                            let obj2 = {};
+                            obj2["dicID"] = 7831;
+                            obj2["StartStopRecordID"] = _this.rightForm[0].StopRecordID;
+                            obj2["EndDate"] = newFormatDate.formatTodayDate();
+                            submitData.push(obj2);
+                        }
+                        // 正常保存状态
+                        let obj3 = JSON.parse(JSON.stringify(_this.rightForm[0]));
+                        obj3.ProductionStatus = 25;
+                        obj3["OutfitID"] = '';
+                        submitData.push(obj3);
+
+                        // 机台可使用
+                        submitData.push({ OrganizeID: _this.rightForm[0].OutfitID, dicID: 36, OutfitStatus: 0 });
+
+                        _this.generalSaveData(submitData, 0);
+
+                    }).catch(() => {
+
+                    })
+                }
+            },
+            // 停机
+            parseOutfit() {
+                if (Object.keys(this.rightForm[0]).length == 0) {
+                    this.$message.error("请单击选择需要停机的订单！");
+                } else if (this.rightForm[0].ProductionStatus != 22) { // 生产中才可停机
+                    this.$message.error("该订单不符合停机条件！");
+                } else {
+                    this.$confirm('确认是否停机吗？').then((res) => {
+                        _this.adminLoading = true;
+                        let submitData = [];
+                        // 添加一笔停机记录
+                        let obj = JSON.parse(JSON.stringify(_this.rightForm[0]));
+                        obj["dicID"] = 7831;
+                        obj["StartStopType"] = 2;
+                        obj["StartDate"] = newFormatDate.formatTodayDate();
+                        obj["Remark2"] = '订单暂停';
+                        submitData.push(obj);
+
+                        // 机台被暂停
+                        submitData.push({ OrganizeID: _this.rightForm[0].OutfitID, dicID: 36, OutfitStatus: 1 });
+
+                        let obj3 = JSON.parse(JSON.stringify(_this.rightForm[0]));
+                        obj3.ProductionStatus = 28;
+                        submitData.push(obj3);
+                        _this.generalSaveData(submitData, 0);
+
+                    }).catch(() => {
+
+                    })
+                }
+            },
+            // 设备总览的停机
+            parseOutfit_1() {
+                if (Object.keys(this.rightForm[1]).length == 0) {
+                    this.$message.error("请单击选择需要停机的机台！");
+                } else if (this.rightForm[0].ProductionStatus != 22) { // 生产中才可停机
+                    this.$message.error("该订单不符合停机条件！");
+                } else {
+                    this.$confirm('确认是否停机吗？').then((res) => {
+                        _this.adminLoading = true;
+                        let submitData = [];
+                        // 添加一笔停机记录 可存在多笔订单
+                        let searchForm = { OutfitID: _this.rightForm[1].OutfitID, dicID: 98, ProductionStatus: _this.rightForm[1].ProductionStatus };
+                        let OrderBOMIDs = _this.rightForm[1].OrderBOMIDs.split(',');
+                        // 先找出多个单的数据
+                        axiosPostRequst(`/APSAPI/APSData`, searchForm)
+                            .then(function (res) {
+                                const { result, data, count, msg } = res;
+                                if (result) {
+                                    if (data.length != 0) {
+                                        let submitData = [];
+                                        OrderBOMIDs.forEach(x => {
+                                            submitData.push({ OrderBOMID: x, dicID: 98, ProductionStatus: 28 })
+                                        })
+                                        data.forEach(y => {
+                                            let obj = JSON.parse(JSON.stringify(y));
+                                            obj["dicID"] = 7831;
+                                            obj["StartStopType"] = 2;
+                                            obj["StartDate"] = newFormatDate.formatTodayDate();
+                                            obj["Remark2"] = '订单暂停';
+                                            submitData.push(obj);
+                                        })
+                                        _this.generalSaveData(submitData, 1);
+                                        _this.targetTag_1 = -1;
+                                        _this.rightForm[1] = null;
+                                        _this.submitForm[1].AbnormalReason = null;
+                                        _this.$set(_this.submitForm[1], 'AbnormalReason', '');
+                                    }
+                                } else {
+                                    _this.$message({
+                                        message: msg,
+                                        type: "error",
+                                        dangerouslyUseHTMLString: true,
+                                    });
+                                }
+                            })
+
+                        // 机台被暂停
+                        submitData.push({ OrganizeID: _this.rightForm[0].OutfitID, dicID: 36, OutfitStatus: 1 });
+
+                        let obj3 = JSON.parse(JSON.stringify(_this.rightForm[0]));
+                        obj3.ProductionStatus = 28;
+                        submitData.push(obj3);
+                        _this.generalSaveData(submitData, 0);
+
+                    }).catch(() => {
+
+                    })
+                }
+            },
+            // 通用保存数据
+            generalSaveData(newData, index) {
+                axiosPostRequst(`/APSAPI/SaveData`, newData)
+                    .then(function (res) {
+                        const { result, data, count, msg } = res;
+                        if (result) {
+                            _this.adminLoading = false;
+                            if (index == 1) {
+                                _this.targetTag_1 = -1;
+                                _this.rightForm[1] = {};
+                                _this.$set(_this.submitForm[1], 'AbnormalReason', null);
+                            }
+                            _this.$message({
+                                message: msg,
+                                type: "success",
+                                dangerouslyUseHTMLString: true,
+                            });
+                            _this.dataSearch(index);
+                            if (index == 4) {
+                                _this.dataSearch(1);
+                            }
+                        } else {
+                            _this.adminLoading = false;
+                            _this.$message({
+                                message: msg,
+                                type: "error",
+                                dangerouslyUseHTMLString: true,
+                            });
+                        }
+                    })
+            },
+            /////////////////////表格样式
+            rowStyle({ row, column }) {
+                let className = '';
+                if (row.Extend10 == '紧急') {
+                    className += 'redColor'
+                }
+                return className
+            },
+            cellStyle({ row, column }) {
+                if (row.ProductionStatus == 22 && column.property == 'ProductionStatusName') {
+                    return {
+                        backgroundColor: '#3D8AFF',
+                        color: '#fff'
+                    }
+                } else if (row.ProductionStatus == 28 && column.property == 'ProductionStatusName') {
+                    return {
+                        backgroundColor: '#FEBA34',
+                        color: '#fff'
+                    }
+                } else if (row.ProductionStatus == 26 && column.property == 'ProductionStatusName') {
+                    return {
+                        backgroundColor: '#ACBBD2',
+                        color: '#fff'
+                    }
+                } else if (row.ProductionStatus == 25 && column.property == 'ProductionStatusName') {
+                    return {
+                        backgroundColor: '#23C191',
+                        color: '#fff'
+                    }
+                } else if (row.ProductionStatus == 89 && column.property == 'ProductionStatusName') {
+                    return {
+                        backgroundColor: '#FF7A55',
+                        color: '#fff'
+                    }
+                }
+            },
+            ///////////////////////设备模块
+            // 开机选单
+            setOrder() {
+                this.activeName = 'left_0';
+            },
+            // 更换订单
+            changeOrder() {
+                if (Object.keys(this.rightForm[1]).length == 0) {
+                    this.$message.error("请单击选中需要更换订单的机台！");
+                } else {
+                    this.dialogOrder = true;
+                    this.formSearchs[10].datas["ProductionStatus"] = 21;
+                    this.dataSearch(10);
+                }
+            },
+            // 异常开始
+            AbnormalStart() {
+                if (Object.keys(this.rightForm[1]).length == 0) {
+                    this.$message.error("请单击异常的机台！");
+                } else {
+                    if (_this.rightForm[1].ProductionStatus != 22) {
+                        this.$message.error("没有正在生产的产品！")
+                    } else if (!_this.submitForm[1].AbnormalReason) {
+                        this.$message.error("请选择异常原因！")
+                    } else {
+                        this.$confirm('确认机台异常吗？').then(() => {
+                            _this.adminLoading = true;
+                            // 获取OrderBOMID去添加异常记录
+                            let submitData = [];
+                            let OrderBOMIDs = _this.rightForm[1].OrderBOMIDs.split(',');
+                            let searchForm = { OutfitID: _this.rightForm[1].OutfitID, dicID: 98, ProductionStatus: _this.rightForm[1].ProductionStatus };
+                            submitData.push({ OrganizeID: _this.rightForm[1].OutfitID, dicID: 36, OutfitStatus: 1 });
+                            OrderBOMIDs.forEach(x => {
+                                submitData.push({ OrderBOMID: x, dicID: 98, ProductionStatus: 28 })
+                            })
+                            axiosPostRequst(`/APSAPI/APSData`, searchForm)
+                                .then(function (res) {
+                                    const { result, data, count, msg } = res;
+                                    if (result) {
+                                        if (data.length != 0) {
+                                            data.forEach(y => {
+                                                let obj = JSON.parse(JSON.stringify(y));
+                                                obj["dicID"] = 7831;
+                                                obj["StartStopType"] = 2;
+                                                obj["StartDate"] = newFormatDate.formatTodayDate();
+                                                obj["Remark1"] = JSON.parse(JSON.stringify(_this.submitForm[1].AbnormalReason));
+                                                obj["Remark2"] = '机台异常';
+                                                submitData.push(obj);
+                                            })
+                                            _this.generalSaveData(submitData, 1);
+                                        }
+                                    } else {
+                                        _this.$message({
+                                            message: msg,
+                                            type: "error",
+                                            dangerouslyUseHTMLString: true,
+                                        });
+                                    }
+                                })
+                        }).catch(() => {
+
+                        })
+                    }
+                }
+            },
+            // 异常结束
+            AbnormalEnd() {
+                if (Object.keys(this.rightForm[1]).length == 0) {
+                    this.$message.error("请单击异常的机台！");
+                } else {
+                    if (_this.rightForm[1].ProductionStatus != 28) {
+                        this.$message.error("该机台无异常，红色为异常的机台，请注意！")
+                    } else {
+                        this.$confirm('确认结束机台异常吗？').then(() => {
+                            _this.adminLoading = true;
+                            // 获取OrderBOMID去添加异常记录
+                            let submitData = [];
+                            let OrderBOMID = _this.rightForm[1].OrderBOMIDs.split(',');
+                            let StartStopRecordID = _this.rightForm[1].StartStopRecordIDs.split(',');
+                            submitData.push({ OrganizeID: _this.rightForm[1].OutfitID, dicID: 36, OutfitStatus: 0 });
+                            OrderBOMID.forEach(x => {
+                                submitData.push({ OrderBOMID: x, dicID: 98, ProductionStatus: 22 })
+                            })
+                            StartStopRecordID.forEach(y => {
+                                let obj = {};
+                                obj["dicID"] = 7831;
+                                obj["StartStopRecordID"] = y;
+                                obj["EndDate"] = newFormatDate.formatTodayDate();
+                                submitData.push(obj);
+                            })
+                            _this.generalSaveData(submitData, 1);
+                            _this.$set(_this.submitForm[1], 'AbnormalReason', '');
+                        }).catch(() => {
+
+                        })
+                    }
+                }
+            },
+            // 在设备总览中下机
+            downOutfit_1() {
+
+            },
+            // 生产完成
+            productionComplete() {
+                if (Object.keys(this.rightForm[1]).length == 0) {
+                    this.$message.error("请单击已完成的机台！");
+                } else {
+                    if (_this.rightForm[1].ProductionStatus != 22 && _this.rightForm[1].ProductionStatus != 28) {
+                        this.$message.error("仅生产中或暂停的机台可以生产完成！")
+                    } else {
+                        this.$confirm('确定这台机的生产完成吗？').then(() => {
+                            _this.adminLoading = true;
+                            let submitData = [];
+                            // 可能出现多个订单
+                            let StartRecordIDs = _this.rightForm[1].StartRecordIDs.split(',');
+                            if (StartRecordIDs.length != 0) {
+                                StartRecordIDs.forEach(x => {
+                                    if (x) {
+                                        // 给有上机记录的的订单补上结束时间
+                                        let obj = {};
+                                        obj["dicID"] = 7831;
+                                        obj["StartStopRecordID"] = x;
+                                        obj["EndDate"] = newFormatDate.formatTodayDate();
+                                        submitData.push(obj);
+                                    }
+                                })
+                            }
+
+                            // 如何刚好是停机的直接也给停机记录补上结束时间
+                            if (_this.rightForm[1].ProductionStatus == 28) {
+                                // 可能出现多个订单
+                                let StartStopRecordIDs = _this.rightForm[1].StartStopRecordIDs.split(',');
+                                StartStopRecordIDs.forEach(o => {
+                                    if (o) {
+                                        let obj2 = {};
+                                        obj2["dicID"] = 7831;
+                                        obj2["StartStopRecordID"] = o;
+                                        obj2["EndDate"] = newFormatDate.formatTodayDate();
+                                        submitData.push(obj2);
+                                    }
+                                })
+                            }
+
+                            // 正常保存状态 多个订单一起保存
+                            let OrderBOMIDs = _this.rightForm[1].OrderBOMIDs.split(',');
+                            if (OrderBOMIDs.length != 0) {
+                                OrderBOMIDs.forEach(p => {
+                                    if (p) {
+                                        let obj3 = {};
+                                        obj3.ProductionStatus = 25;
+                                        obj3["OrderBOMID"] = p;
+                                        obj3["OutfitID"] = '';
+                                        obj3["dicID"] = 98;
+                                        submitData.push(obj3);
+                                    }
+                                })
+                            }
+
+                            // 机台可使用
+                            submitData.push({ OrganizeID: _this.rightForm[1].OutfitID, dicID: 36, OutfitStatus: 0 });
+                            _this.generalSaveData(submitData, 1);
+                        }).catch(() => {
+
+                        })
+                    }
+                }
+            },
+            // 异常结束
+            AbnormalEnd2() {
+                if (Object.keys(this.rightForm[4]).length == 0) {
+                    this.$message.error("请单击异常的机台！");
+                } else {
+                    this.$confirm('确认结束机台异常吗？').then(() => {
+                        // 获取OrderBOMID去添加异常记录
+                        let submitData = [];
+                        _this.adminLoading = true;
+                        let OrderBOMID = _this.rightForm[4].OrderBOMIDs.split(',');
+                        let StartStopRecordID = _this.rightForm[4].StartStopRecordIDs.split(',');
+                        submitData.push({ OrganizeID: _this.rightForm[4].OutfitID, dicID: 36, OutfitStatus: 0 });
+                        OrderBOMID.forEach(x => {
+                            submitData.push({ OrderBOMID: x, dicID: 98, ProductionStatus: 22 })
+                        })
+                        StartStopRecordID.forEach(y => {
+                            let obj = {};
+                            obj["dicID"] = 7831;
+                            obj["StartStopRecordID"] = y;
+                            obj["EndDate"] = newFormatDate.formatTodayDate();
+                            submitData.push(obj);
+                        })
+                        _this.generalSaveData(submitData, 4);
+                    }).catch(() => {
+                    })
+                }
+            },
+            // 确定更换单
+            sureChangeOrder() {
+                if (this.rightForm[1].ProductionStatus == 28) {
+                    this.$message.error("该机台异常中！")
+                }
+                else if (this.rightForm[1].ProductionStatus != 22) {
+                    this.$message.error("没有单可更换！")
+                } else {
+                    this.$confirm('确认要更换订单吗？').then(() => {
+                        _this.adminLoading = true;
+                        let OrderBOMID = _this.rightForm[1].OrderBOMIDs.split(',');
+                        let StartStopRecordID = _this.rightForm[1].StartStopRecordIDs.split(',');
+                        let submitData = [];
+                        submitData.push({ OrganizeID: _this.rightForm[4].OutfitID, dicID: 36, OutfitStatus: 0 });
+                        // 1.更改原先单的状态，下机的数据添加结束时间
+                        OrderBOMID.forEach(x => {
+                            submitData.push({ OrderBOMID: x, dicID: 98, ProductionStatus: 21, OutfitID: null })
+                        })
+                        StartStopRecordID.forEach(y => {
+                            let obj = {};
+                            obj["dicID"] = 7831;
+                            obj["StartStopRecordID"] = y;
+                            obj["EndDate"] = newFormatDate.formatTodayDate();
+                            submitData.push(obj);
+                        })
+                        // 2.更改新单的
+                        let newData = JSON.parse(JSON.stringify(this.selectionData[10]));
+                        newData[0]["OutfitID"] = _this.rightForm[1].OutfitID;
+                        newData[0]["ProductionStatus"] = 22;
+                        submitData = submitData.concat(newData);
+                        // 3.新加入一笔上机记录
+                        let obj = JSON.parse(JSON.stringify(_this.rightForm[0]));
+                        obj["dicID"] = 7831;
+                        obj["StartStopType"] = 1;
+                        obj["OutfitID"] = _this.rightForm[1].OutfitID;
+                        obj["StartDate"] = newFormatDate.formatTodayDate();
+                        submitData.push(obj);
+                        _this.generalSaveData(submitData, 1);
+                        _this.dialogOrder = false;
+                    }).catch(() => {
+                    })
+                }
+            },
+            // 添加异常原因
+            setAbnormal(val) {
+                this.$set(this.submitForm[1], 'AbnormalReason', val);
+            }
+        }
+    })
+    const _this = app;
+</script>
